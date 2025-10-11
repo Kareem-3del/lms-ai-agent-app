@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LMS Center - Kareem Adel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>LMS Center - Kareem Adel</h1>
+      <div class="header-actions">
+        <button id="debugBtn" class="btn">Debug</button>
+        <button id="settingsBtn" class="btn">Settings</button>
+      </div>
+    </header>
+
+    <div id="settingsPanel" class="settings-panel hidden">
+      <h2>LMS Configuration</h2>
+      <form id="settingsForm">
+        <div class="form-group">
+          <label for="lmsType">LMS Type:</label>
+          <select id="lmsType" name="lmsType">
+            <option value="canvas">Canvas</option>
+            <option value="moodle">Moodle</option>
+            <option value="blackboard">Blackboard</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="lmsUrl">LMS URL:</label>
+          <input type="url" id="lmsUrl" name="lmsUrl" placeholder="https://your-lms.edu" required>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="useCredentialLogin" name="useCredentialLogin" checked>
+            Use username/password (recommended)
+          </label>
+        </div>
+
+        <div id="credentialFields">
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Your LMS username" autocomplete="username">
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Your LMS password" autocomplete="current-password">
+          </div>
+        </div>
+
+        <div id="tokenField" class="hidden">
+          <div class="form-group">
+            <label for="apiToken">API Token:</label>
+            <input type="password" id="apiToken" name="apiToken" placeholder="Your API token">
+            <small>Get your token from your LMS account settings</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="checkInterval">Check Interval (minutes):</label>
+          <input type="number" id="checkInterval" name="checkInterval" value="15" min="5" max="120">
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="soundEnabled" name="soundEnabled" checked>
+            Enable notification sound
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="autoDownload" name="autoDownload" checked>
+            Automatically download assignment files
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="downloadPath">Download Folder:</label>
+          <input type="text" id="downloadPath" name="downloadPath" placeholder="Default: Documents/LMS Downloads">
+          <small>Leave empty for default location</small>
+        </div>
+
+        <div class="form-group">
+          <label for="geminiApiKey">Gemini API Key (Optional):</label>
+          <input type="password" id="geminiApiKey" name="geminiApiKey" placeholder="For AI assignment solving">
+          <small>Get your key from Google AI Studio</small>
+        </div>
+
+        <div class="form-group">
+          <label for="geminiModel">Gemini Model:</label>
+          <select id="geminiModel" name="geminiModel">
+            <option value="">Loading models...</option>
+          </select>
+          <small>Choose AI model for solving assignments</small>
+        </div>
+
+        <div class="form-group">
+          <label for="extraRules">Extra Rules for AI (Optional):</label>
+          <textarea id="extraRules" name="extraRules" rows="4" placeholder="Add custom rules for AI to follow on every assignment...
+Example:
+- Always explain each step in detail
+- Use simple language
+- Include examples"></textarea>
+          <small>These rules will be sent to AI with every assignment solution request</small>
+        </div>
+
+        <div class="form-group">
+          <label>PDF Header Fields:</label>
+          <div class="checkbox-group">
+            <label><input type="checkbox" name="pdfHeaderField" value="name" checked> Assignment Name</label>
+            <label><input type="checkbox" name="pdfHeaderField" value="id" checked> Assignment ID</label>
+            <label><input type="checkbox" name="pdfHeaderField" value="course"> Course Name</label>
+            <label><input type="checkbox" name="pdfHeaderField" value="dueDate"> Due Date</label>
+            <label><input type="checkbox" name="pdfHeaderField" value="category"> Category</label>
+            <label><input type="checkbox" name="pdfHeaderField" value="generated"> Generated Date</label>
+          </div>
+          <small>Select which information to show at the top of PDFs (default: Name + ID only)</small>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="useHandwriting" name="useHandwriting">
+            Use handwriting style for PDFs
+          </label>
+          <small>Makes the PDF look like handwritten notes with natural font and paper texture</small>
+        </div>
+
+        <div class="form-group" id="handwritingOptions" style="display: none; margin-left: 1.5rem;">
+          <label for="handwritingFont">Handwriting Font Style:</label>
+          <select id="handwritingFont" name="handwritingFont">
+            <option value="Caveat">Caveat (Natural & Casual)</option>
+            <option value="Indie Flower">Indie Flower (Playful)</option>
+            <option value="Patrick Hand">Patrick Hand (Clean)</option>
+            <option value="Shadows Into Light">Shadows Into Light (Elegant)</option>
+            <option value="Kalam">Kalam (Bold)</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Save Settings</button>
+          <button type="button" id="cancelBtn" class="btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="debugPanel" class="debug-panel hidden">
+      <h2>Debug Console</h2>
+      <button id="closeDebug" class="btn btn-close">×</button>
+      <div class="debug-controls">
+        <button id="clearLogs" class="btn">Clear</button>
+        <button id="refreshData" class="btn">Refresh Data</button>
+      </div>
+      <div id="debugLogs" class="debug-logs"></div>
+    </div>
+
+    <main id="mainContent">
+      <div class="status-bar">
+        <span id="connectionStatus">Disconnected</span>
+        <span id="lastCheck">Never checked</span>
+      </div>
+
+      <div class="view-controls">
+        <button class="tab-btn active" data-view="courses">Courses</button>
+        <button class="tab-btn" data-view="assignments">Assignments</button>
+        <button class="tab-btn" data-view="lectures">Lectures</button>
+      </div>
+
+      <div id="coursesView" class="content-view">
+        <div id="coursesList" class="courses-list">
+          <div class="empty-state">
+            <p>No courses found</p>
+            <p class="hint">Configure your LMS settings to get started</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="assignmentsView" class="content-view hidden">
+        <div class="filter-controls">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+          <button class="filter-btn" data-filter="overdue">Overdue</button>
+          <button class="filter-btn" data-filter="submitted">Submitted</button>
+          <button class="filter-btn" data-filter="not-submitted">Not Submitted</button>
+        </div>
+        <div id="assignmentList" class="assignment-list">
+          <div class="empty-state">
+            <p>No assignments found</p>
+            <p class="hint">All caught up!</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="lecturesView" class="content-view hidden">
+        <div id="lecturesList" class="lectures-list">
+          <div class="empty-state">
+            <p>No lectures found</p>
+            <p class="hint">Check back later</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Submit Assignment Modal -->
+  <div id="submitModal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeSubmitDialog()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Submit Assignment</h2>
+        <button class="btn-close" onclick="closeSubmitDialog()">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="submitAssignmentInfo" class="submit-info"></div>
+
+        <div class="form-group">
+          <label for="submissionComment">Comment (Optional):</label>
+          <textarea id="submissionComment" rows="3" placeholder="Add a comment for your submission..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Attachments:</label>
+          <div id="submissionAttachments" class="submission-attachments">
+            <!-- Attachments will be populated here -->
+          </div>
+          <button type="button" class="btn btn-secondary" onclick="addCustomAttachment()">
+            + Add File
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeSubmitDialog()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitAssignment()">Submit Assignment</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
