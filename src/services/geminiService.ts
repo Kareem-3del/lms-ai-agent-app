@@ -1074,14 +1074,14 @@ Generated: ${new Date().toLocaleString()}
       ${this.useHandwriting ? `
       transform: rotate(0.2deg);
       opacity: 0.94;
-      color: rgba(45, 55, 65, 0.92);
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.92);
       ` : ''}
     }
     .katex {
       font-size: ${this.useHandwriting ? `${this.fontSize * 1.2}px` : '1.1em'};
       ${this.useHandwriting
         ? `font-family: '${this.handwritingFont}', cursive !important;
-           color: rgba(40, 50, 60, 0.9) !important;`
+           color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.9) !important;`
         : `font-family: 'KaTeX_Main', 'Times New Roman', serif !important;`
       }
     }
@@ -1090,7 +1090,7 @@ Generated: ${new Date().toLocaleString()}
     .katex, .katex-html, .katex * {
       font-family: '${this.handwritingFont}', cursive !important;
       font-style: normal !important;
-      color: rgba(40, 50, 60, 0.88) !important;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.88) !important;
       position: relative;
     }
     .katex .mord, .katex .mbin, .katex .mrel, .katex .mop,
@@ -1128,17 +1128,17 @@ Generated: ${new Date().toLocaleString()}
       margin: 20px 0;
     }
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid ${this.useHandwriting ? 'rgba(200, 200, 200, 0.4)' : '#ddd'};
       padding: 12px;
       text-align: left;
     }
     th {
-      background-color: #3498db;
-      color: white;
       font-weight: bold;
+      color: ${this.useHandwriting ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.95)` : '#000'};
+      ${this.useHandwriting ? 'border-bottom: 2px solid rgba(100, 100, 100, 0.3);' : ''}
     }
     tr:nth-child(even) {
-      background-color: ${this.useHandwriting ? 'rgba(249, 249, 249, 0.3)' : '#f9f9f9'};
+      background-color: ${this.useHandwriting ? 'rgba(249, 249, 249, 0.2)' : '#f9f9f9'};
     }
     code {
       background-color: ${this.useHandwriting ? 'rgba(244, 244, 244, 0.4)' : '#f4f4f4'};

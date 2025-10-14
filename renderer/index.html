@@ -17,8 +17,9 @@
     </header>
 
     <div id="settingsPanel" class="settings-panel hidden">
-      <h2>LMS Configuration</h2>
       <form id="settingsForm">
+        <button type="button" class="btn-close-settings" id="closeSettings">×</button>
+        <div class="settings-body">
         <div class="form-group">
           <label for="lmsType">LMS Type:</label>
           <select id="lmsType" name="lmsType">
@@ -331,9 +332,10 @@ Example:
           </div>
         </div>
 
+        </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Save Settings</button>
-          <button type="button" id="cancelBtn" class="btn">Cancel</button>
+          <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
         </div>
       </form>
     </div>

@@ -217,6 +217,13 @@ function setupIPC() {
         return;
       }
 
+      // Send initial progress
+      event.reply('solve-progress', {
+        assignmentId: assignment.id,
+        status: 'Initializing...',
+        progress: 0
+      });
+
       // Download attachments and extract content for AI processing
       let downloadedFiles: { [fileName: string]: string } = {};
       const pdfImages: { [fileName: string]: string[] } = {};
@@ -233,6 +240,11 @@ function setupIPC() {
 
       // ALWAYS download and process attachments when solving (not just when autoDownload is enabled)
       if (assignment.attachments && assignment.attachments.length > 0) {
+        event.reply('solve-progress', {
+          assignmentId: assignment.id,
+          status: `Downloading ${assignment.attachments.length} attachment(s)...`,
+          progress: 10
+        });
         console.log(`Processing ${assignment.attachments.length} attachment(s) for AI solving...`);
 
         // Download all files to the same assignment folder
@@ -243,10 +255,21 @@ function setupIPC() {
         );
         console.log('Downloaded files:', downloadedFiles);
 
+        event.reply('solve-progress', {
+          assignmentId: assignment.id,
+          status: 'Processing attachments...',
+          progress: 25
+        });
+
         // Extract text from DOCX files (no LibreOffice needed!)
         for (const [fileName, filePath] of Object.entries(downloadedFiles)) {
           if (filePath && downloader.isDocxFile(fileName)) {
             try {
+              event.reply('solve-progress', {
+                assignmentId: assignment.id,
+                status: `Extracting text from ${fileName}...`,
+                progress: 30
+              });
               console.log(`Extracting text from DOCX file: ${fileName}`);
               const text = await downloader.extractDocxText(filePath);
               if (text) {
@@ -262,9 +285,18 @@ function setupIPC() {
         }
 
         // Convert PDFs to images
+        let pdfCount = 0;
+        const totalPdfs = Object.entries(downloadedFiles).filter(([fileName]) => downloader.isPdfFile(fileName)).length;
+
         for (const [fileName, filePath] of Object.entries(downloadedFiles)) {
           if (filePath && downloader.isPdfFile(fileName)) {
             try {
+              pdfCount++;
+              event.reply('solve-progress', {
+                assignmentId: assignment.id,
+                status: `Converting PDF ${pdfCount}/${totalPdfs} to images...`,
+                progress: 30 + (pdfCount / totalPdfs) * 20
+              });
               console.log(`Processing PDF file: ${fileName}`);
               const images = await downloader.convertPdfToImages(filePath);
               pdfImages[fileName] = images;
@@ -276,7 +308,19 @@ function setupIPC() {
         }
 
         console.log(`Total content for AI: ${Object.keys(docxTexts).length} DOCX text(s), ${Object.keys(pdfImages).length} PDF image(s)`);
+      } else {
+        event.reply('solve-progress', {
+          assignmentId: assignment.id,
+          status: 'No attachments to process',
+          progress: 50
+        });
       }
+
+      event.reply('solve-progress', {
+        assignmentId: assignment.id,
+        status: 'Sending to AI for solving...',
+        progress: 55
+      });
 
       const gemini = new GeminiService(
         config.geminiApiKey,
@@ -299,8 +343,31 @@ function setupIPC() {
         config.enableMarginDoodles !== false,
         config.enableInkSpots !== false
       );
+
       const solution = await gemini.solveAssignment(assignment, downloadedFiles, pdfImages, docxTexts);
+
+      event.reply('solve-progress', {
+        assignmentId: assignment.id,
+        status: 'Writing solution files...',
+        progress: 80
+      });
+
       const filePath = await gemini.saveSolution(assignment, solution);
+
+      event.reply('solve-progress', {
+        assignmentId: assignment.id,
+        status: 'Converting to PDF...',
+        progress: 90
+      });
+
+      // Small delay to show the final progress before completion
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      event.reply('solve-progress', {
+        assignmentId: assignment.id,
+        status: 'Complete!',
+        progress: 100
+      });
 
       event.reply('solve-result', {
         assignmentId: assignment.id,
@@ -338,6 +405,13 @@ function setupIPC() {
       const downloader = new FileDownloader(config?.downloadPath);
       const pathManager = downloader.getPathManager();
 
+      // Send download start event
+      event.reply('download-progress', {
+        attachmentId: attachment.id,
+        status: 'Downloading...',
+        progress: 0
+      });
+
       // Determine folder path based on context (assignment or lecture)
       let folderPath: string;
       if (lectureName) {
@@ -346,7 +420,19 @@ function setupIPC() {
         folderPath = pathManager.getAssignmentPath(courseName, assignmentName);
       }
 
+      event.reply('download-progress', {
+        attachmentId: attachment.id,
+        status: 'Saving file...',
+        progress: 50
+      });
+
       const filePath = await downloader.downloadFile(attachment, folderPath, config?.apiToken);
+
+      event.reply('download-progress', {
+        attachmentId: attachment.id,
+        status: 'Complete!',
+        progress: 100
+      });
 
       event.reply('download-complete', {
         attachmentId: attachment.id,

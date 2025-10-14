@@ -78,10 +78,47 @@ refreshData.addEventListener('click', () => {
   addDebugLog('Manually refreshing data...');
   ipcRenderer.send('request-assignments');
   ipcRenderer.send('request-courses');
+  ipcRenderer.send('request-lectures');
 });
 
 cancelBtn.addEventListener('click', () => {
   settingsPanel.classList.add('hidden');
+});
+
+// Close settings button (X button)
+const closeSettingsBtn = document.getElementById('closeSettings');
+if (closeSettingsBtn) {
+  closeSettingsBtn.addEventListener('click', () => {
+    settingsPanel.classList.add('hidden');
+  });
+}
+
+// Click outside settings modal to close
+settingsPanel.addEventListener('click', (e) => {
+  // Only close if clicking directly on the overlay (settingsPanel), not its children
+  if (e.target === settingsPanel) {
+    settingsPanel.classList.add('hidden');
+  }
+});
+
+// Prevent clicks inside the settings form from closing the modal
+const settingsFormElement = document.getElementById('settingsForm');
+if (settingsFormElement) {
+  settingsFormElement.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+}
+
+// ESC key to close settings modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (!settingsPanel.classList.contains('hidden')) {
+      settingsPanel.classList.add('hidden');
+    }
+    if (!debugPanel.classList.contains('hidden')) {
+      debugPanel.classList.add('hidden');
+    }
+  }
 });
 
 useCredentialLogin.addEventListener('change', () => {
@@ -390,8 +427,12 @@ ipcRenderer.on('settings-loaded', (event, loadedSettings) => {
       ipcRenderer.send('request-gemini-models', settings.geminiApiKey);
     }
 
-    // Re-render assignments to update action buttons based on geminiApiKey
-    if (assignments && assignments.length > 0) {
+    // Only re-render assignments if geminiApiKey changed (to update button states)
+    const previousHasGemini = settings && settings.geminiApiKey && settings.geminiApiKey.length > 0;
+    const currentHasGemini = loadedSettings.geminiApiKey && loadedSettings.geminiApiKey.length > 0;
+
+    if (previousHasGemini !== currentHasGemini && assignments && assignments.length > 0) {
+      addDebugLog('Gemini API key changed, updating assignment buttons');
       renderAssignments(assignments);
     }
 
@@ -430,21 +471,33 @@ ipcRenderer.on('last-check-time', (event, time) => {
 });
 
 ipcRenderer.on('courses-updated', (event, coursesData) => {
-  courses = coursesData;
-  addDebugLog(`Loaded ${courses.length} courses`);
-  renderCourses(courses);
+  // Only update if data actually changed
+  const coursesChanged = JSON.stringify(courses) !== JSON.stringify(coursesData);
+  if (coursesChanged || courses.length === 0) {
+    courses = coursesData;
+    addDebugLog(`Loaded ${courses.length} courses`);
+    renderCourses(courses);
+  }
 });
 
 ipcRenderer.on('assignments-updated', (event, assignmentsData) => {
-  assignments = assignmentsData;
-  addDebugLog(`Loaded ${assignments.length} assignments`);
-  renderAssignments(assignments);
+  // Only update if data actually changed
+  const assignmentsChanged = JSON.stringify(assignments) !== JSON.stringify(assignmentsData);
+  if (assignmentsChanged || assignments.length === 0) {
+    assignments = assignmentsData;
+    addDebugLog(`Loaded ${assignments.length} assignments`);
+    renderAssignments(assignments);
+  }
 });
 
 ipcRenderer.on('lectures-updated', (event, lecturesData) => {
-  lectures = lecturesData;
-  addDebugLog(`Loaded ${lectures.length} lectures`);
-  renderLectures(lectures);
+  // Only update if data actually changed
+  const lecturesChanged = JSON.stringify(lectures) !== JSON.stringify(lecturesData);
+  if (lecturesChanged || lectures.length === 0) {
+    lectures = lecturesData;
+    addDebugLog(`Loaded ${lectures.length} lectures`);
+    renderLectures(lectures);
+  }
 });
 
 ipcRenderer.on('gemini-models-result', (event, models) => {
@@ -644,8 +697,10 @@ function renderAssignments(assignmentsData) {
     `;
   }).join('');
 
-  // Check file status for all attachments after DOM is updated
-  setTimeout(() => checkAllAttachmentStatus(), 100);
+  // Check file status for all attachments after DOM is updated (only if not already checked)
+  if (filteredAssignments.length > 0) {
+    setTimeout(() => checkAllAttachmentStatus(), 100);
+  }
 }
 
 // Check status for all attachments in the current view
@@ -655,20 +710,40 @@ function checkAllAttachmentStatus() {
     const attachmentId = wrapper.dataset.attachmentId;
     const courseName = wrapper.dataset.courseName;
     const assignmentName = wrapper.dataset.assignmentName;
+    const lectureName = wrapper.dataset.lectureName;
 
-    // Find the assignment and attachment data
-    const assignment = assignments.find(a =>
-      a.courseName === courseName && a.name === assignmentName
-    );
+    // Check if this is a lecture or assignment attachment
+    if (lectureName) {
+      // Find the lecture and attachment data
+      const lecture = lectures.find(l =>
+        l.courseName === courseName && l.name === lectureName
+      );
 
-    if (assignment && assignment.attachments) {
-      const attachment = assignment.attachments.find(f => f.id === attachmentId);
-      if (attachment) {
-        ipcRenderer.send('check-file-exists', {
-          attachment: attachment,
-          courseName: courseName,
-          assignmentName: assignmentName
-        });
+      if (lecture && lecture.attachments) {
+        const attachment = lecture.attachments.find(f => f.id === attachmentId);
+        if (attachment) {
+          ipcRenderer.send('check-file-exists', {
+            attachment: attachment,
+            courseName: courseName,
+            lectureName: lectureName
+          });
+        }
+      }
+    } else if (assignmentName) {
+      // Find the assignment and attachment data
+      const assignment = assignments.find(a =>
+        a.courseName === courseName && a.name === assignmentName
+      );
+
+      if (assignment && assignment.attachments) {
+        const attachment = assignment.attachments.find(f => f.id === attachmentId);
+        if (attachment) {
+          ipcRenderer.send('check-file-exists', {
+            attachment: attachment,
+            courseName: courseName,
+            assignmentName: assignmentName
+          });
+        }
       }
     }
   });
@@ -687,7 +762,7 @@ function renderLectures(lecturesData) {
 
   lecturesList.innerHTML = lecturesData.map(lecture => {
     return `
-      <div class="lecture-card">
+      <div class="lecture-card" data-lecture-id="${lecture.id}">
         <h3>${escapeHtml(lecture.name)}</h3>
         <div class="lecture-meta">
           <span class="lecture-course">${escapeHtml(lecture.courseName)}</span>
@@ -696,17 +771,31 @@ function renderLectures(lecturesData) {
         ${lecture.description ? `<p class="lecture-desc">${escapeHtml(lecture.description.substring(0, 150))}...</p>` : ''}
         ${lecture.attachments && lecture.attachments.length > 0 ? `
           <div class="lecture-files">
+            <strong>📎 Attachments:</strong>
             ${lecture.attachments.map(file => `
-              <div class="file-item" onclick="openFile('${file.url}')">
-                📄 ${escapeHtml(file.fileName)}
+              <div class="file-item-wrapper" data-attachment-id="${file.id}" data-course-name="${escapeHtml(lecture.courseName)}" data-lecture-name="${escapeHtml(lecture.name)}">
+                <div class="file-item-info">
+                  <span class="file-name">📄 ${escapeHtml(file.fileName)}</span>
+                  <span class="file-size">${file.size ? formatFileSize(file.size) : ''}</span>
+                </div>
+                <div class="file-status" id="status-${file.id}">
+                  <span class="status-text">Checking...</span>
+                </div>
               </div>
             `).join('')}
           </div>
         ` : ''}
-        ${lecture.url ? `<button class="btn btn-action" onclick="viewAssignment('${lecture.url}')">👁️ View</button>` : ''}
+        <div class="lecture-actions">
+          ${lecture.url ? `<button class="btn btn-action" onclick="viewAssignment('${lecture.url}')">👁️ View</button>` : ''}
+        </div>
       </div>
     `;
   }).join('');
+
+  // Check file status for all attachments after DOM is updated
+  if (lecturesData.length > 0) {
+    setTimeout(() => checkAllAttachmentStatus(), 100);
+  }
 }
 
 function getDueClass(dueDate) {
@@ -803,6 +892,27 @@ function formatFileSize(bytes) {
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
 }
+
+// Listen for progress updates
+ipcRenderer.on('solve-progress', (event, data) => {
+  addDebugLog(`${data.status} (${data.progress}%)`, 'info');
+
+  const card = document.querySelector(`[data-assignment-id="${data.assignmentId}"]`);
+  if (card) {
+    const btn = card.querySelector('button[onclick*="solveAssignment"]');
+    if (btn) {
+      // Update button text with progress
+      btn.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 120px;">
+          <div style="font-size: 11px;">${data.status}</div>
+          <div style="width: 100%; background: rgba(255,255,255,0.3); height: 4px; border-radius: 2px; overflow: hidden;">
+            <div style="width: ${data.progress}%; background: #2ecc71; height: 100%; transition: width 0.3s ease;"></div>
+          </div>
+        </div>
+      `;
+    }
+  }
+});
 
 // Listen for AI responses
 ipcRenderer.on('summary-result', (event, data) => {
@@ -934,31 +1044,57 @@ ipcRenderer.on('file-exists-result', (event, data) => {
     } else {
       // Find the attachment data from the wrapper
       const wrapper = statusDiv.closest('.file-item-wrapper');
+      const lectureCard = statusDiv.closest('.lecture-card');
       const assignmentCard = statusDiv.closest('.assignment-card');
-      const assignmentId = assignmentCard ? assignmentCard.dataset.assignmentId : '';
-      const assignment = assignments.find(a => a.id === assignmentId);
 
-      if (assignment) {
-        const attachment = assignment.attachments.find(f => f.id === data.attachmentId);
-        if (attachment) {
-          statusDiv.innerHTML = `
-            <button class="btn-download" onclick='downloadAttachmentById(${JSON.stringify(attachment)}, "${assignment.courseName.replace(/'/g, "\\'")}", "${assignment.name.replace(/'/g, "\\'")}")'>⬇️ Download</button>
-          `;
+      // Check if this is a lecture or assignment
+      if (lectureCard) {
+        const lectureId = lectureCard.dataset.lectureId;
+        const lecture = lectures.find(l => l.id === lectureId);
+
+        if (lecture) {
+          const attachment = lecture.attachments.find(f => f.id === data.attachmentId);
+          if (attachment) {
+            statusDiv.innerHTML = `
+              <button class="btn-download" onclick='downloadLectureAttachmentById(${JSON.stringify(attachment)}, "${lecture.courseName.replace(/'/g, "\\'")}", "${lecture.name.replace(/'/g, "\\'")}")'>⬇️ Download</button>
+            `;
+          }
+        }
+      } else if (assignmentCard) {
+        const assignmentId = assignmentCard.dataset.assignmentId;
+        const assignment = assignments.find(a => a.id === assignmentId);
+
+        if (assignment) {
+          const attachment = assignment.attachments.find(f => f.id === data.attachmentId);
+          if (attachment) {
+            statusDiv.innerHTML = `
+              <button class="btn-download" onclick='downloadAttachmentById(${JSON.stringify(attachment)}, "${assignment.courseName.replace(/'/g, "\\'")}", "${assignment.name.replace(/'/g, "\\'")}")'>⬇️ Download</button>
+            `;
+          }
         }
       }
     }
   }
 });
 
+// Listen for download progress updates
+ipcRenderer.on('download-progress', (event, data) => {
+  const statusDiv = document.getElementById(`status-${data.attachmentId}`);
+  if (statusDiv) {
+    statusDiv.innerHTML = `
+      <div style="display: flex; flex-direction: column; gap: 2px; min-width: 100px;">
+        <div style="font-size: 10px;">${data.status}</div>
+        <div style="width: 100%; background: rgba(0,0,0,0.1); height: 3px; border-radius: 2px; overflow: hidden;">
+          <div style="width: ${data.progress}%; background: #3498db; height: 100%; transition: width 0.3s ease;"></div>
+        </div>
+      </div>
+    `;
+  }
+});
+
 // Download attachment by ID helper
 function downloadAttachmentById(attachment, courseName, assignmentName) {
   addDebugLog(`Downloading: ${attachment.fileName}`);
-
-  // Update status to show downloading
-  const statusDiv = document.getElementById(`status-${attachment.id}`);
-  if (statusDiv) {
-    statusDiv.innerHTML = `<span class="status-text downloading">⏳ Downloading...</span>`;
-  }
 
   ipcRenderer.send('download-attachment', {
     attachment,
@@ -967,17 +1103,43 @@ function downloadAttachmentById(attachment, courseName, assignmentName) {
   });
 }
 
+// Download lecture attachment by ID helper
+function downloadLectureAttachmentById(attachment, courseName, lectureName) {
+  addDebugLog(`Downloading lecture attachment: ${attachment.fileName}`);
+
+  ipcRenderer.send('download-attachment', {
+    attachment,
+    courseName,
+    lectureName
+  });
+}
+
 // Retry download helper
 function retryDownload(attachmentId) {
   const wrapper = document.querySelector(`[data-attachment-id="${attachmentId}"]`);
+  const lectureCard = wrapper ? wrapper.closest('.lecture-card') : null;
   const assignmentCard = wrapper ? wrapper.closest('.assignment-card') : null;
-  const assignmentId = assignmentCard ? assignmentCard.dataset.assignmentId : '';
-  const assignment = assignments.find(a => a.id === assignmentId);
 
-  if (assignment) {
-    const attachment = assignment.attachments.find(f => f.id === attachmentId);
-    if (attachment) {
-      downloadAttachmentById(attachment, assignment.courseName, assignment.name);
+  // Check if this is a lecture or assignment
+  if (lectureCard) {
+    const lectureId = lectureCard.dataset.lectureId;
+    const lecture = lectures.find(l => l.id === lectureId);
+
+    if (lecture) {
+      const attachment = lecture.attachments.find(f => f.id === attachmentId);
+      if (attachment) {
+        downloadLectureAttachmentById(attachment, lecture.courseName, lecture.name);
+      }
+    }
+  } else if (assignmentCard) {
+    const assignmentId = assignmentCard.dataset.assignmentId;
+    const assignment = assignments.find(a => a.id === assignmentId);
+
+    if (assignment) {
+      const attachment = assignment.attachments.find(f => f.id === attachmentId);
+      if (attachment) {
+        downloadAttachmentById(attachment, assignment.courseName, assignment.name);
+      }
     }
   }
 }
@@ -997,25 +1159,50 @@ function openDownloadedFile(attachmentId) {
     addDebugLog('File path not found in cache, constructing manually', 'warn');
 
     const wrapper = document.querySelector(`[data-attachment-id="${attachmentId}"]`);
+    const lectureCard = wrapper ? wrapper.closest('.lecture-card') : null;
     const assignmentCard = wrapper ? wrapper.closest('.assignment-card') : null;
-    const assignmentId = assignmentCard ? assignmentCard.dataset.assignmentId : '';
-    const assignment = assignments.find(a => a.id === assignmentId);
 
-    if (assignment) {
-      const attachment = assignment.attachments.find(f => f.id === attachmentId);
-      if (attachment) {
-        const path = require('path');
-        const config = settings;
-        const downloadsPath = config?.downloadPath || require('electron').app.getPath('downloads');
-        const subfolder = `${assignment.courseName}/${assignment.name}`.replace(/[/\\?%*:|"<>]/g, '-');
-        const constructedPath = path.join(downloadsPath, 'LMS Downloads', subfolder, attachment.fileName);
-        const folderPath = path.dirname(constructedPath);
+    // Check if this is a lecture or assignment
+    if (lectureCard) {
+      const lectureId = lectureCard.dataset.lectureId;
+      const lecture = lectures.find(l => l.id === lectureId);
 
-        addDebugLog(`Opening folder (fallback): ${folderPath}`);
-        ipcRenderer.send('open-file', folderPath);
+      if (lecture) {
+        const attachment = lecture.attachments.find(f => f.id === attachmentId);
+        if (attachment) {
+          const path = require('path');
+          const config = settings;
+          const downloadsPath = config?.downloadPath || require('electron').app.getPath('downloads');
+          const subfolder = `${lecture.courseName}/${lecture.name}`.replace(/[/\\?%*:|"<>]/g, '-');
+          const constructedPath = path.join(downloadsPath, 'LMS Downloads', 'Lectures', subfolder, attachment.fileName);
+          const folderPath = path.dirname(constructedPath);
+
+          addDebugLog(`Opening folder (fallback): ${folderPath}`);
+          ipcRenderer.send('open-file', folderPath);
+        }
+      } else {
+        addDebugLog('Could not find lecture or attachment for opening folder', 'error');
       }
-    } else {
-      addDebugLog('Could not find assignment or attachment for opening folder', 'error');
+    } else if (assignmentCard) {
+      const assignmentId = assignmentCard.dataset.assignmentId;
+      const assignment = assignments.find(a => a.id === assignmentId);
+
+      if (assignment) {
+        const attachment = assignment.attachments.find(f => f.id === attachmentId);
+        if (attachment) {
+          const path = require('path');
+          const config = settings;
+          const downloadsPath = config?.downloadPath || require('electron').app.getPath('downloads');
+          const subfolder = `${assignment.courseName}/${assignment.name}`.replace(/[/\\?%*:|"<>]/g, '-');
+          const constructedPath = path.join(downloadsPath, 'LMS Downloads', subfolder, attachment.fileName);
+          const folderPath = path.dirname(constructedPath);
+
+          addDebugLog(`Opening folder (fallback): ${folderPath}`);
+          ipcRenderer.send('open-file', folderPath);
+        }
+      } else {
+        addDebugLog('Could not find assignment or attachment for opening folder', 'error');
+      }
     }
   }
 }
