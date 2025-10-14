@@ -144,6 +144,7 @@ const handwritingColorSize = document.getElementById('handwritingColorSize');
 const handwritingFontSize = document.getElementById('handwritingFontSize');
 const handwritingPaperStyle = document.getElementById('handwritingPaperStyle');
 const handwritingRandomization = document.getElementById('handwritingRandomization');
+const advancedHandwritingSettings = document.getElementById('advancedHandwritingSettings');
 
 useHandwriting.addEventListener('change', () => {
   if (useHandwriting.checked) {
@@ -152,12 +153,14 @@ useHandwriting.addEventListener('change', () => {
     handwritingFontSize.style.display = 'block';
     handwritingPaperStyle.style.display = 'block';
     handwritingRandomization.style.display = 'block';
+    advancedHandwritingSettings.style.display = 'block';
   } else {
     handwritingOptions.style.display = 'none';
     handwritingColorSize.style.display = 'none';
     handwritingFontSize.style.display = 'none';
     handwritingPaperStyle.style.display = 'none';
     handwritingRandomization.style.display = 'none';
+    advancedHandwritingSettings.style.display = 'none';
   }
 });
 
@@ -259,6 +262,168 @@ document.getElementById('resetRandomization').addEventListener('click', () => {
   addDebugLog('Reset randomization settings to defaults');
 });
 
+// Advanced handwriting settings - Font Size sync
+const fontSizeAdvancedSlider = document.getElementById('fontSizeAdvanced');
+const fontSizeAdvancedValue = document.getElementById('fontSizeAdvancedValue');
+
+if (fontSizeAdvancedSlider && fontSizeAdvancedValue) {
+  fontSizeAdvancedSlider.addEventListener('input', () => {
+    fontSizeAdvancedValue.value = fontSizeAdvancedSlider.value;
+  });
+
+  fontSizeAdvancedValue.addEventListener('input', () => {
+    fontSizeAdvancedSlider.value = fontSizeAdvancedValue.value;
+  });
+}
+
+// Line Height sync
+const lineHeightSlider = document.getElementById('lineHeight');
+const lineHeightValue = document.getElementById('lineHeightValue');
+
+if (lineHeightSlider && lineHeightValue) {
+  lineHeightSlider.addEventListener('input', () => {
+    lineHeightValue.value = lineHeightSlider.value;
+  });
+
+  lineHeightValue.addEventListener('input', () => {
+    lineHeightSlider.value = lineHeightValue.value;
+  });
+}
+
+// Letter Spacing sync
+const letterSpacingSlider = document.getElementById('letterSpacing');
+const letterSpacingValue = document.getElementById('letterSpacingValue');
+
+if (letterSpacingSlider && letterSpacingValue) {
+  letterSpacingSlider.addEventListener('input', () => {
+    letterSpacingValue.value = letterSpacingSlider.value;
+  });
+
+  letterSpacingValue.addEventListener('input', () => {
+    letterSpacingSlider.value = letterSpacingValue.value;
+  });
+}
+
+// Word Spacing sync
+const wordSpacingSlider = document.getElementById('wordSpacing');
+const wordSpacingValue = document.getElementById('wordSpacingValue');
+
+if (wordSpacingSlider && wordSpacingValue) {
+  wordSpacingSlider.addEventListener('input', () => {
+    wordSpacingValue.value = wordSpacingSlider.value;
+  });
+
+  wordSpacingValue.addEventListener('input', () => {
+    wordSpacingSlider.value = wordSpacingValue.value;
+  });
+}
+
+// Indentation Range sync
+const indentationRangeSlider = document.getElementById('indentationRangeSlider');
+const indentationRangeValue = document.getElementById('indentationRangeValue');
+
+if (indentationRangeSlider && indentationRangeValue) {
+  indentationRangeSlider.addEventListener('input', () => {
+    indentationRangeValue.value = indentationRangeSlider.value;
+  });
+
+  indentationRangeValue.addEventListener('input', () => {
+    indentationRangeSlider.value = indentationRangeValue.value;
+  });
+}
+
+// Paragraph Spacing sync
+const paragraphSpacingSlider = document.getElementById('paragraphSpacing');
+const paragraphSpacingValue = document.getElementById('paragraphSpacingValue');
+
+if (paragraphSpacingSlider && paragraphSpacingValue) {
+  paragraphSpacingSlider.addEventListener('input', () => {
+    paragraphSpacingValue.value = paragraphSpacingSlider.value;
+  });
+
+  paragraphSpacingValue.addEventListener('input', () => {
+    paragraphSpacingSlider.value = paragraphSpacingValue.value;
+  });
+}
+
+// Mirror margins toggle
+const mirrorMarginsCheckbox = document.getElementById('mirrorMargins');
+const evenPageMarginsSection = document.getElementById('evenPageMargins');
+
+if (mirrorMarginsCheckbox && evenPageMarginsSection) {
+  mirrorMarginsCheckbox.addEventListener('change', () => {
+    if (mirrorMarginsCheckbox.checked) {
+      evenPageMarginsSection.style.display = 'block';
+    } else {
+      evenPageMarginsSection.style.display = 'none';
+    }
+  });
+}
+
+// Random indentation toggle
+const randomIndentationCheckbox = document.getElementById('randomIndentation');
+const indentationRangeSection = document.getElementById('indentationRange');
+
+if (randomIndentationCheckbox && indentationRangeSection) {
+  randomIndentationCheckbox.addEventListener('change', () => {
+    if (randomIndentationCheckbox.checked) {
+      indentationRangeSection.style.display = 'block';
+    } else {
+      indentationRangeSection.style.display = 'none';
+    }
+  });
+}
+
+// Font filter buttons
+const fontFilterBtns = document.querySelectorAll('[data-font-filter]');
+const customFontSelect = document.getElementById('customFont');
+
+fontFilterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.fontFilter;
+
+    // Update active state
+    fontFilterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Filter options
+    if (customFontSelect) {
+      const options = customFontSelect.querySelectorAll('option');
+      options.forEach(option => {
+        const languages = option.dataset.languages || '';
+        if (filter === 'all') {
+          option.style.display = '';
+        } else {
+          if (languages.includes(filter)) {
+            option.style.display = '';
+          } else {
+            option.style.display = 'none';
+          }
+        }
+      });
+    }
+  });
+});
+
+// Font search functionality
+const fontSearchInput = document.getElementById('fontSearch');
+
+if (fontSearchInput && customFontSelect) {
+  fontSearchInput.addEventListener('input', () => {
+    const searchTerm = fontSearchInput.value.toLowerCase();
+    const options = customFontSelect.querySelectorAll('option');
+
+    options.forEach(option => {
+      const text = option.textContent.toLowerCase();
+      if (text.includes(searchTerm)) {
+        option.style.display = '';
+      } else {
+        option.style.display = 'none';
+      }
+    });
+  });
+}
+
 // Tab switching
 tabBtns.forEach(btn => {
   btn.addEventListener('click', () => {
@@ -330,7 +495,40 @@ settingsForm.addEventListener('submit', (e) => {
     blurVariance: parseInt(formData.get('blurVariance')) || 15,
     sizeVariance: parseInt(formData.get('sizeVariance')) || 3,
     enableMarginDoodles: formData.get('enableMarginDoodles') === 'on',
-    enableInkSpots: formData.get('enableInkSpots') === 'on'
+    enableInkSpots: formData.get('enableInkSpots') === 'on',
+    // Advanced handwriting settings
+    paperBackground: formData.get('paperBackground') || 'plain-white',
+    tableBackground: formData.get('tableBackground') || 'none',
+    customFont: formData.get('customFont') || 'font1',
+    fontSizeAdvanced: parseInt(formData.get('fontSizeAdvanced')) || 30,
+    lineHeight: parseFloat(formData.get('lineHeight')) || 1.30,
+    letterSpacing: parseFloat(formData.get('letterSpacing')) || 0,
+    wordSpacing: parseInt(formData.get('wordSpacing')) || 0,
+    enableBlur: formData.get('enableBlur') === 'on',
+    enableShading: formData.get('enableShading') === 'on',
+    enablePaperShadow: formData.get('enablePaperShadow') === 'on',
+    enablePaperTexture: formData.get('enablePaperTexture') === 'on',
+    enableShadowSilhouette: formData.get('enableShadowSilhouette') === 'on',
+    enablePaperRotation: formData.get('enablePaperRotation') === 'on',
+    enableInkFlow: formData.get('enableInkFlow') === 'on',
+    marginTop: parseInt(formData.get('marginTop')) || 20,
+    marginRight: parseInt(formData.get('marginRight')) || 20,
+    marginBottom: parseInt(formData.get('marginBottom')) || 20,
+    marginLeft: parseInt(formData.get('marginLeft')) || 20,
+    mirrorMargins: formData.get('mirrorMargins') === 'on',
+    marginTopEven: parseInt(formData.get('marginTopEven')) || 20,
+    marginRightEven: parseInt(formData.get('marginRightEven')) || 20,
+    marginBottomEven: parseInt(formData.get('marginBottomEven')) || 20,
+    marginLeftEven: parseInt(formData.get('marginLeftEven')) || 20,
+    randomWordRotation: formData.get('randomWordRotation') === 'on',
+    randomLetterRotation: formData.get('randomLetterRotation') === 'on',
+    randomIndentation: formData.get('randomIndentation') === 'on',
+    indentationRange: parseInt(formData.get('indentationRangeSlider')) || 5,
+    enableHyphenation: formData.get('enableHyphenation') === 'on',
+    paragraphSpacing: parseInt(formData.get('paragraphSpacing')) || 0,
+    outputFormat: formData.get('outputFormat') || 'pdf',
+    outputQuality: formData.get('outputQuality') || 'normal',
+    pageSize: formData.get('pageSize') || 'a4'
   };
 
   if (useCredentials) {
@@ -399,12 +597,111 @@ ipcRenderer.on('settings-loaded', (event, loadedSettings) => {
     // Update color preview
     updateColorPreview();
 
+    // Load advanced handwriting settings
+    if (document.getElementById('paperBackground')) {
+      document.getElementById('paperBackground').value = settings.paperBackground || 'plain-white';
+    }
+    if (document.getElementById('tableBackground')) {
+      document.getElementById('tableBackground').value = settings.tableBackground || 'none';
+    }
+    if (document.getElementById('customFont')) {
+      document.getElementById('customFont').value = settings.customFont || 'font1';
+    }
+    if (document.getElementById('fontSizeAdvanced')) {
+      document.getElementById('fontSizeAdvanced').value = settings.fontSizeAdvanced || 30;
+      document.getElementById('fontSizeAdvancedValue').value = settings.fontSizeAdvanced || 30;
+    }
+    if (document.getElementById('lineHeight')) {
+      document.getElementById('lineHeight').value = settings.lineHeight || 1.30;
+      document.getElementById('lineHeightValue').value = settings.lineHeight || 1.30;
+    }
+    if (document.getElementById('letterSpacing')) {
+      document.getElementById('letterSpacing').value = settings.letterSpacing || 0;
+      document.getElementById('letterSpacingValue').value = settings.letterSpacing || 0;
+    }
+    if (document.getElementById('wordSpacing')) {
+      document.getElementById('wordSpacing').value = settings.wordSpacing || 0;
+      document.getElementById('wordSpacingValue').value = settings.wordSpacing || 0;
+    }
+    if (document.getElementById('enableBlur')) {
+      document.getElementById('enableBlur').checked = settings.enableBlur || false;
+    }
+    if (document.getElementById('enableShading')) {
+      document.getElementById('enableShading').checked = settings.enableShading || false;
+    }
+    if (document.getElementById('enablePaperShadow')) {
+      document.getElementById('enablePaperShadow').checked = settings.enablePaperShadow || false;
+    }
+    if (document.getElementById('enablePaperTexture')) {
+      document.getElementById('enablePaperTexture').checked = settings.enablePaperTexture !== false;
+    }
+    if (document.getElementById('enableShadowSilhouette')) {
+      document.getElementById('enableShadowSilhouette').checked = settings.enableShadowSilhouette || false;
+    }
+    if (document.getElementById('enablePaperRotation')) {
+      document.getElementById('enablePaperRotation').checked = settings.enablePaperRotation || false;
+    }
+    if (document.getElementById('enableInkFlow')) {
+      document.getElementById('enableInkFlow').checked = settings.enableInkFlow || false;
+    }
+    if (document.getElementById('marginTop')) {
+      document.getElementById('marginTop').value = settings.marginTop || 20;
+      document.getElementById('marginRight').value = settings.marginRight || 20;
+      document.getElementById('marginBottom').value = settings.marginBottom || 20;
+      document.getElementById('marginLeft').value = settings.marginLeft || 20;
+    }
+    if (document.getElementById('mirrorMargins')) {
+      document.getElementById('mirrorMargins').checked = settings.mirrorMargins || false;
+      if (settings.mirrorMargins) {
+        document.getElementById('evenPageMargins').style.display = 'block';
+      }
+    }
+    if (document.getElementById('marginTopEven')) {
+      document.getElementById('marginTopEven').value = settings.marginTopEven || 20;
+      document.getElementById('marginRightEven').value = settings.marginRightEven || 20;
+      document.getElementById('marginBottomEven').value = settings.marginBottomEven || 20;
+      document.getElementById('marginLeftEven').value = settings.marginLeftEven || 20;
+    }
+    if (document.getElementById('randomWordRotation')) {
+      document.getElementById('randomWordRotation').checked = settings.randomWordRotation || false;
+    }
+    if (document.getElementById('randomLetterRotation')) {
+      document.getElementById('randomLetterRotation').checked = settings.randomLetterRotation || false;
+    }
+    if (document.getElementById('randomIndentation')) {
+      document.getElementById('randomIndentation').checked = settings.randomIndentation || false;
+      if (settings.randomIndentation) {
+        document.getElementById('indentationRange').style.display = 'block';
+      }
+    }
+    if (document.getElementById('indentationRangeSlider')) {
+      document.getElementById('indentationRangeSlider').value = settings.indentationRange || 5;
+      document.getElementById('indentationRangeValue').value = settings.indentationRange || 5;
+    }
+    if (document.getElementById('enableHyphenation')) {
+      document.getElementById('enableHyphenation').checked = settings.enableHyphenation || false;
+    }
+    if (document.getElementById('paragraphSpacing')) {
+      document.getElementById('paragraphSpacing').value = settings.paragraphSpacing || 0;
+      document.getElementById('paragraphSpacingValue').value = settings.paragraphSpacing || 0;
+    }
+    if (document.getElementById('outputFormat')) {
+      document.getElementById('outputFormat').value = settings.outputFormat || 'pdf';
+    }
+    if (document.getElementById('outputQuality')) {
+      document.getElementById('outputQuality').value = settings.outputQuality || 'normal';
+    }
+    if (document.getElementById('pageSize')) {
+      document.getElementById('pageSize').value = settings.pageSize || 'a4';
+    }
+
     if (settings.useHandwriting) {
       document.getElementById('handwritingOptions').style.display = 'block';
       document.getElementById('handwritingColorSize').style.display = 'block';
       document.getElementById('handwritingFontSize').style.display = 'block';
       document.getElementById('handwritingPaperStyle').style.display = 'block';
       document.getElementById('handwritingRandomization').style.display = 'block';
+      advancedHandwritingSettings.style.display = 'block';
     }
 
     const useCredentials = settings.useCredentialLogin !== false;
@@ -1001,7 +1298,7 @@ ipcRenderer.on('download-complete', (event, data) => {
   if (statusDiv) {
     statusDiv.innerHTML = `
       <span class="status-badge downloaded">✓ Downloaded</span>
-      <button class="btn-download" onclick="openDownloadedFile('${data.attachmentId}')">📂 Open</button>
+      <button class="btn-download">📂 Open</button>
     `;
   }
 
@@ -1022,7 +1319,7 @@ ipcRenderer.on('download-error', (event, data) => {
   if (statusDiv) {
     statusDiv.innerHTML = `
       <span class="status-badge error">✗ Failed</span>
-      <button class="btn-download retry" onclick="retryDownload('${data.attachmentId}')">🔄 Retry</button>
+      <button class="btn-download retry">🔄 Retry</button>
     `;
   }
 });
@@ -1039,40 +1336,13 @@ ipcRenderer.on('file-exists-result', (event, data) => {
 
       statusDiv.innerHTML = `
         <span class="status-badge downloaded">✓ Downloaded</span>
-        <button class="btn-download" onclick="openDownloadedFile('${data.attachmentId}')">📂 Open</button>
+        <button class="btn-download">📂 Open</button>
       `;
     } else {
-      // Find the attachment data from the wrapper
-      const wrapper = statusDiv.closest('.file-item-wrapper');
-      const lectureCard = statusDiv.closest('.lecture-card');
-      const assignmentCard = statusDiv.closest('.assignment-card');
-
-      // Check if this is a lecture or assignment
-      if (lectureCard) {
-        const lectureId = lectureCard.dataset.lectureId;
-        const lecture = lectures.find(l => l.id === lectureId);
-
-        if (lecture) {
-          const attachment = lecture.attachments.find(f => f.id === data.attachmentId);
-          if (attachment) {
-            statusDiv.innerHTML = `
-              <button class="btn-download" onclick='downloadLectureAttachmentById(${JSON.stringify(attachment)}, "${lecture.courseName.replace(/'/g, "\\'")}", "${lecture.name.replace(/'/g, "\\'")}")'>⬇️ Download</button>
-            `;
-          }
-        }
-      } else if (assignmentCard) {
-        const assignmentId = assignmentCard.dataset.assignmentId;
-        const assignment = assignments.find(a => a.id === assignmentId);
-
-        if (assignment) {
-          const attachment = assignment.attachments.find(f => f.id === data.attachmentId);
-          if (attachment) {
-            statusDiv.innerHTML = `
-              <button class="btn-download" onclick='downloadAttachmentById(${JSON.stringify(attachment)}, "${assignment.courseName.replace(/'/g, "\\'")}", "${assignment.name.replace(/'/g, "\\'")}")'>⬇️ Download</button>
-            `;
-          }
-        }
-      }
+      // Simple download button - event delegation will handle the click
+      statusDiv.innerHTML = `
+        <button class="btn-download">⬇️ Download</button>
+      `;
     }
   }
 });
@@ -1113,6 +1383,63 @@ function downloadLectureAttachmentById(attachment, courseName, lectureName) {
     lectureName
   });
 }
+
+// Global click handler for download buttons (using event delegation)
+document.addEventListener('click', (e) => {
+  const target = e.target;
+
+  // Check if this is a button or clicked inside a button
+  if (!target.classList.contains('btn-download')) return;
+
+  // Handle retry buttons
+  if (target.classList.contains('retry')) {
+    const wrapper = target.closest('.file-item-wrapper');
+    if (wrapper) {
+      retryDownload(wrapper.dataset.attachmentId);
+    }
+    return;
+  }
+
+  // Handle open folder buttons (check if it has "📂" emoji)
+  if (target.textContent.includes('📂')) {
+    const statusDiv = target.closest('.file-status');
+    if (statusDiv) {
+      const attachmentId = statusDiv.id.replace('status-', '');
+      openDownloadedFile(attachmentId);
+    }
+    return;
+  }
+
+  // Handle download buttons (check if it has "⬇️" emoji)
+  if (target.textContent.includes('⬇️')) {
+    const wrapper = target.closest('.file-item-wrapper');
+    if (!wrapper) return;
+
+    const attachmentId = wrapper.dataset.attachmentId;
+    const courseName = wrapper.dataset.courseName;
+    const lectureName = wrapper.dataset.lectureName;
+    const assignmentName = wrapper.dataset.assignmentName;
+
+    // Find the appropriate attachment
+    if (lectureName) {
+      const lecture = lectures.find(l => l.courseName === courseName && l.name === lectureName);
+      if (lecture) {
+        const attachment = lecture.attachments.find(f => f.id === attachmentId);
+        if (attachment) {
+          downloadLectureAttachmentById(attachment, courseName, lectureName);
+        }
+      }
+    } else if (assignmentName) {
+      const assignment = assignments.find(a => a.courseName === courseName && a.name === assignmentName);
+      if (assignment) {
+        const attachment = assignment.attachments.find(f => f.id === attachmentId);
+        if (attachment) {
+          downloadAttachmentById(attachment, courseName, assignmentName);
+        }
+      }
+    }
+  }
+});
 
 // Retry download helper
 function retryDownload(attachmentId) {

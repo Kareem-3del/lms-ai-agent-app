@@ -332,6 +332,282 @@ Example:
           </div>
         </div>
 
+        <!-- Advanced Handwriting Settings -->
+        <div id="advancedHandwritingSettings" style="display: none;">
+
+          <!-- Background Selection -->
+          <div class="form-group">
+            <label>📄 Paper Background:</label>
+            <select id="paperBackground" name="paperBackground">
+              <optgroup label="Plain Papers">
+                <option value="plain-white" selected>Plain White Paper</option>
+                <option value="wide-ruled-lined">Wide Ruled Lined Paper</option>
+                <option value="lined-with-margin">Lined Paper with Margin</option>
+                <option value="blank-spiral-notepad">Blank Spiral Notepad</option>
+                <option value="blank-spiral-sheet">Blank Spiral Notepad Sheet</option>
+                <option value="lined-spiral">Lined Spiral Notepad</option>
+              </optgroup>
+              <optgroup label="Grid Papers">
+                <option value="blue-grid">Blue Grid Graph Paper</option>
+                <option value="orange-grid">Orange Grid Paper</option>
+                <option value="dotted-grid">Dotted Grid Paper</option>
+                <option value="white-grid">Classic White Grid Paper</option>
+                <option value="light-gray-graph">Light Gray Graph Paper</option>
+                <option value="square-grid">Square Grid Paper</option>
+                <option value="classic-grid">Classic Grid Paper</option>
+              </optgroup>
+              <optgroup label="Notebook Papers">
+                <option value="realistic-spiral">Realistic Blank Spiral Notepad</option>
+                <option value="light-blue-ruled">Light Blue Ruled Paper</option>
+                <option value="blue-lines-spiral">Blue Lines Spiral Notepad</option>
+                <option value="grey-lined-sheet">Grey Lined Paper Sheet</option>
+                <option value="lined-classic">Lined Notebook Paper Classic</option>
+                <option value="lined-with-margin">Lined Notebook Paper with Margin</option>
+                <option value="lined-red-margin">Lined Notebook Paper with Red Margin</option>
+                <option value="lined-fine">Lined Notebook Paper Fine</option>
+                <option value="detailed-notebook">Blank Detailed Notebook Paper</option>
+                <option value="school-ruler">School Ruler Notebook Paper</option>
+                <option value="simple-lined">Simple Lined Paper</option>
+                <option value="spiral-red-margin">Spiral Notepad with Red Margin</option>
+                <option value="realistic-lined">Realistic Notebook Lined Paper</option>
+              </optgroup>
+              <optgroup label="Special Papers">
+                <option value="plain-white-notepad">Plain White Notepad</option>
+                <option value="notepad-orange-edge">Notepad with Orange Edge</option>
+                <option value="mirror-even-pages">Mirror Paper on even pages</option>
+              </optgroup>
+            </select>
+            <small>Choose the paper background style for your handwritten documents</small>
+          </div>
+
+          <!-- Table Background -->
+          <div class="form-group">
+            <label>🪵 Table/Desk Background:</label>
+            <select id="tableBackground" name="tableBackground">
+              <option value="none">None (Plain)</option>
+              <option value="dark-charcoal">Dark Charcoal Workspace</option>
+              <option value="golden-oak">Golden Oak Desk</option>
+              <option value="rustic-walnut">Rustic Walnut Finish</option>
+              <option value="classic-mahogany">Classic Mahogany Workspace</option>
+              <option value="grey-weathered">Grey Weathered Planks</option>
+              <option value="midnight-blue">Midnight Blue Woodgrain</option>
+              <option value="bright-maple">Bright Maple Workspace</option>
+              <option value="desert-oak">Desert Oak Surface</option>
+              <option value="steel-ash">Steel Ash Desk</option>
+              <option value="amber-vintage">Amber Vintage Wood</option>
+              <option value="slate-grey">Slate Grey Canvas</option>
+              <option value="rich-cedar">Rich Cedar Planks</option>
+              <option value="pristine-white">Pristine White Desk</option>
+              <option value="pale-ash">Pale Ash</option>
+              <option value="warm-walnut">Warm Walnut</option>
+              <option value="white-pine">White Pine</option>
+              <option value="blonde-oak">Blonde Oak</option>
+              <option value="walnut">Walnut</option>
+              <option value="espresso-ash">Espresso Ash</option>
+              <option value="grey-oak">Grey Oak</option>
+              <option value="honey-maple">Honey Maple</option>
+              <option value="light-bamboo">Light Bamboo</option>
+              <option value="silver-driftwood">Silver Driftwood</option>
+              <option value="rich-cherry">Rich Cherry</option>
+              <option value="modern-dark-wood">Modern Dark Wood Workspace</option>
+            </select>
+            <small>Table background will be visible after converting to handwriting</small>
+          </div>
+
+          <!-- Font Selection with Language Support -->
+          <div class="form-group">
+            <label>✍️ Font Selection:</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <button type="button" class="btn btn-secondary" data-font-filter="all">All</button>
+              <button type="button" class="btn btn-secondary" data-font-filter="latin">Latin</button>
+              <button type="button" class="btn btn-secondary" data-font-filter="cyrillic">Cyrillic</button>
+              <button type="button" class="btn btn-secondary" data-font-filter="chinese">Chinese</button>
+              <button type="button" class="btn btn-secondary" data-font-filter="arabic">Arabic</button>
+            </div>
+            <input type="text" id="fontSearch" placeholder="Search fonts..." style="margin-bottom: 10px;">
+            <select id="customFont" name="customFont" size="8" style="width: 100%;">
+              <option value="font1" data-languages="latin">Handwriting Font 1 (Latin)</option>
+              <option value="font2" data-languages="latin">Handwriting Font 2 (Latin)</option>
+              <option value="font3" data-languages="latin">Handwriting Font 3 (Latin)</option>
+              <option value="font4" data-languages="latin">Handwriting Font 4 (Latin)</option>
+              <option value="font5" data-languages="latin">Handwriting Font 5 (Latin)</option>
+              <option value="font6" data-languages="latin">Handwriting Font 6 (Latin)</option>
+              <option value="font7" data-languages="latin,cyrillic">Handwriting Font 7 (Latin, Cyrillic)</option>
+              <option value="font8" data-languages="latin,cyrillic">Handwriting Font 8 (Latin, Cyrillic)</option>
+            </select>
+            <div style="margin-top: 10px;">
+              <label for="customFontUpload">Upload Custom Font:</label>
+              <input type="file" id="customFontUpload" accept=".ttf,.otf,.woff,.woff2" style="margin-top: 5px;">
+              <small>Drag & drop a custom font here, or click to select (Max size: 10MB)</small>
+            </div>
+          </div>
+
+          <!-- Font Customization -->
+          <div class="form-group">
+            <label>Font Size (px):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="fontSizeAdvanced" name="fontSizeAdvanced" min="12" max="48" value="30" step="1">
+              <input type="number" id="fontSizeAdvancedValue" value="30" min="12" max="48" style="width: 80px;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Line Height (multiplier):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="lineHeight" name="lineHeight" min="0.8" max="3.0" value="1.30" step="0.05">
+              <input type="number" id="lineHeightValue" value="1.30" min="0.8" max="3.0" step="0.05" style="width: 80px;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Letter Spacing (px):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="letterSpacing" name="letterSpacing" min="-5" max="10" value="0" step="0.5">
+              <input type="number" id="letterSpacingValue" value="0" min="-5" max="10" step="0.5" style="width: 80px;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Word Spacing (px):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="wordSpacing" name="wordSpacing" min="-5" max="20" value="0" step="1">
+              <input type="number" id="wordSpacingValue" value="0" min="-5" max="20" step="1" style="width: 80px;">
+            </div>
+          </div>
+
+          <!-- Effects -->
+          <div class="form-group">
+            <label>✨ Effects (visible after generation):</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="enableBlur" id="enableBlur"> Enable blur effect</label>
+              <label><input type="checkbox" name="enableShading" id="enableShading"> Enable shading effect</label>
+              <label><input type="checkbox" name="enablePaperShadow" id="enablePaperShadow"> Enable paper shadow</label>
+              <label><input type="checkbox" name="enablePaperTexture" id="enablePaperTexture" checked> Enable paper texture</label>
+              <label><input type="checkbox" name="enableShadowSilhouette" id="enableShadowSilhouette"> Enable Shadow Silhouette (NEW)</label>
+              <label><input type="checkbox" name="enablePaperRotation" id="enablePaperRotation"> Enable paper rotation</label>
+              <label><input type="checkbox" name="enableInkFlow" id="enableInkFlow"> Enable ink flow variation</label>
+            </div>
+          </div>
+
+          <!-- Margins -->
+          <div class="form-group">
+            <label>📏 Margins:</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label for="marginTop">Top (px):</label>
+                <input type="number" id="marginTop" name="marginTop" value="20" min="0" max="100">
+              </div>
+              <div>
+                <label for="marginRight">Right (px):</label>
+                <input type="number" id="marginRight" name="marginRight" value="20" min="0" max="100">
+              </div>
+              <div>
+                <label for="marginBottom">Bottom (px):</label>
+                <input type="number" id="marginBottom" name="marginBottom" value="20" min="0" max="100">
+              </div>
+              <div>
+                <label for="marginLeft">Left (px):</label>
+                <input type="number" id="marginLeft" name="marginLeft" value="20" min="0" max="100">
+              </div>
+            </div>
+            <label style="margin-top: 10px;">
+              <input type="checkbox" id="mirrorMargins" name="mirrorMargins">
+              Mirror left and right margins on even pages
+            </label>
+          </div>
+
+          <!-- Even Page Margins -->
+          <div class="form-group" id="evenPageMargins" style="display: none;">
+            <label>📏 Margins (Even Pages):</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div>
+                <label for="marginTopEven">Top (px):</label>
+                <input type="number" id="marginTopEven" name="marginTopEven" value="20" min="0" max="100">
+              </div>
+              <div>
+                <label for="marginRightEven">Right (px):</label>
+                <input type="number" id="marginRightEven" name="marginRightEven" value="20" min="0" max="100">
+              </div>
+              <div>
+                <label for="marginBottomEven">Bottom (px):</label>
+                <input type="number" id="marginBottomEven" name="marginBottomEven" value="20" min="0" max="100">
+              </div>
+              <div>
+                <label for="marginLeftEven">Left (px):</label>
+                <input type="number" id="marginLeftEven" name="marginLeftEven" value="20" min="0" max="100">
+              </div>
+            </div>
+          </div>
+
+          <!-- Text Settings -->
+          <div class="form-group">
+            <label>📝 Text Settings:</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="randomWordRotation" id="randomWordRotation"> Enable Random Word Rotation</label>
+              <label><input type="checkbox" name="randomLetterRotation" id="randomLetterRotation"> Enable Random Letter Rotation</label>
+              <label><input type="checkbox" name="randomIndentation" id="randomIndentation"> Enable Random Indentation</label>
+            </div>
+          </div>
+
+          <div class="form-group" id="indentationRange" style="display: none;">
+            <label>Indentation Range (px):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="indentationRangeSlider" name="indentationRangeSlider" min="0" max="50" value="5" step="1">
+              <input type="number" id="indentationRangeValue" value="5" min="0" max="50" step="1" style="width: 80px;">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="enableHyphenation" name="enableHyphenation">
+              Enable Hyphenation
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label>Paragraph Spacing (px):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="paragraphSpacing" name="paragraphSpacing" min="0" max="50" value="0" step="1">
+              <input type="number" id="paragraphSpacingValue" value="0" min="0" max="50" step="1" style="width: 80px;">
+            </div>
+          </div>
+
+          <!-- Output Settings -->
+          <div class="form-group">
+            <label>⚙️ Output Settings:</label>
+            <div style="display: grid; gap: 10px;">
+              <div>
+                <label for="outputFormat">Output Format:</label>
+                <select id="outputFormat" name="outputFormat">
+                  <option value="pdf">PDF</option>
+                  <option value="png">PNG Image</option>
+                  <option value="jpg">JPEG Image</option>
+                  <option value="svg">SVG Vector</option>
+                </select>
+              </div>
+              <div>
+                <label for="outputQuality">Output Quality:</label>
+                <select id="outputQuality" name="outputQuality">
+                  <option value="draft">Draft (Fast)</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="high">High Quality</option>
+                  <option value="print">Print Quality</option>
+                </select>
+              </div>
+              <div>
+                <label for="pageSize">Page Size:</label>
+                <select id="pageSize" name="pageSize">
+                  <option value="a4" selected>A4</option>
+                  <option value="letter">Letter</option>
+                  <option value="legal">Legal</option>
+                  <option value="a5">A5</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         </div>
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Save Settings</button>
