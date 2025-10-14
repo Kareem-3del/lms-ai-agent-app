@@ -767,6 +767,19 @@ Generated: ${new Date().toLocaleString()}
     // Get paper background from user settings
     const paperBackground = this.getPaperBackground();
 
+    // Convert hex color to RGB for opacity variations
+    const hexToRgb = (hex: string): { r: number, g: number, b: number } => {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+      } : { r: 45, g: 45, b: 45 }; // fallback
+    };
+
+    const rgb = hexToRgb(this.handwritingColor);
+    const baseColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+
     // Create HTML with KaTeX CSS and proper styling
     const fullHtml = `
 <!DOCTYPE html>
@@ -918,7 +931,7 @@ Generated: ${new Date().toLocaleString()}
       font-size: ${this.useHandwriting ? `${this.fontSize}px` : '16px'};
       ${this.useHandwriting ? `
       opacity: 0.91;
-      color: rgba(58, 58, 58, 0.93);
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.93);
       text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.03);
       letter-spacing: 0.005em;
       word-spacing: 0.08em;
@@ -931,63 +944,71 @@ Generated: ${new Date().toLocaleString()}
     ${this.useHandwriting ? `
     /* Add ink bleed effect to certain words */
     strong, b {
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.95);
       filter: contrast(0.98) brightness(0.98);
       text-shadow: 0.3px 0.3px 0.8px rgba(0,0,0,0.08);
       letter-spacing: 0.008em;
     }
     em, i {
       opacity: 0.88;
-      color: rgba(55, 55, 55, 0.90);
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.90);
     }
     ` : ''}
     ${this.useHandwriting ? `
     /* Uneven text with more variation - using user's rotation variance */
     p:nth-child(4n+1) {
-      transform: rotate(${this.rotationVariance * 0.3}deg) translateY(${this.baselineVariance * 0.5}px);
-      opacity: ${Math.max(0.85, 1 - (this.inkDensityVariance / 400))};
-      letter-spacing: ${this.spacingVariance * 0.01}em;
-      word-spacing: ${this.wordSpacingVariance * 0.01}em;
-      ${this.blurVariance > 0 ? `filter: blur(${this.blurVariance * 0.003}px) contrast(${1 - this.blurVariance * 0.001});` : ''}
+      transform: rotate(${this.rotationVariance * 0.6}deg) translateY(${this.baselineVariance}px);
+      opacity: ${Math.max(0.85, 1 - (this.inkDensityVariance / 200))};
+      letter-spacing: ${this.spacingVariance * 0.02}em;
+      word-spacing: ${this.wordSpacingVariance * 0.02}em;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0.85, 1 - (this.inkDensityVariance / 300))});
+      ${this.blurVariance > 0 ? `filter: blur(${this.blurVariance * 0.008}px) contrast(${1 - this.blurVariance * 0.002});` : ''}
     }
     p:nth-child(4n+2) {
-      transform: rotate(-${this.rotationVariance * 0.4}deg) translateY(-${this.baselineVariance * 0.4}px);
-      opacity: ${Math.max(0.88, 1 - (this.inkDensityVariance / 500))};
-      letter-spacing: ${this.spacingVariance * 0.012}em;
-      word-spacing: ${this.wordSpacingVariance * 0.008}em;
-      font-size: ${this.fontSize * (1 - this.sizeVariance * 0.005)}px;
+      transform: rotate(-${this.rotationVariance * 0.8}deg) translateY(-${this.baselineVariance * 0.8}px);
+      opacity: ${Math.max(0.88, 1 - (this.inkDensityVariance / 250))};
+      letter-spacing: ${this.spacingVariance * 0.024}em;
+      word-spacing: ${this.wordSpacingVariance * 0.016}em;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0.88, 1 - (this.inkDensityVariance / 250))});
+      font-size: ${this.fontSize * (1 - this.sizeVariance * 0.01)}px;
     }
     p:nth-child(4n+3) {
-      transform: rotate(${this.rotationVariance * 0.16}deg) translateY(${this.baselineVariance * 0.3}px);
-      opacity: ${Math.max(0.86, 1 - (this.inkDensityVariance / 450))};
-      letter-spacing: ${this.spacingVariance * 0.008}em;
-      word-spacing: ${this.wordSpacingVariance * 0.012}em;
-      font-size: ${this.fontSize * (1 + this.sizeVariance * 0.003)}px;
+      transform: rotate(${this.rotationVariance * 0.32}deg) translateY(${this.baselineVariance * 0.6}px);
+      opacity: ${Math.max(0.86, 1 - (this.inkDensityVariance / 225))};
+      letter-spacing: ${this.spacingVariance * 0.016}em;
+      word-spacing: ${this.wordSpacingVariance * 0.024}em;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0.86, 1 - (this.inkDensityVariance / 225))});
+      font-size: ${this.fontSize * (1 + this.sizeVariance * 0.006)}px;
     }
     p:nth-child(4n) {
-      transform: rotate(-${this.rotationVariance * 0.24}deg) translateY(-${this.baselineVariance * 0.6}px);
-      opacity: ${Math.max(0.89, 1 - (this.inkDensityVariance / 480))};
-      letter-spacing: ${this.spacingVariance * 0.01}em;
-      word-spacing: ${this.wordSpacingVariance * 0.01}em;
-      ${this.blurVariance > 10 ? `filter: contrast(${1 - this.blurVariance * 0.0015});` : ''}
+      transform: rotate(-${this.rotationVariance * 0.48}deg) translateY(-${this.baselineVariance * 1.2}px);
+      opacity: ${Math.max(0.89, 1 - (this.inkDensityVariance / 240))};
+      letter-spacing: ${this.spacingVariance * 0.02}em;
+      word-spacing: ${this.wordSpacingVariance * 0.02}em;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0.89, 1 - (this.inkDensityVariance / 240))});
+      ${this.blurVariance > 10 ? `filter: contrast(${1 - this.blurVariance * 0.003});` : ''}
     }
     /* Faded and smudged text for lists - using user's variance */
     li:nth-child(3n+1) {
-      opacity: ${Math.max(0.82, 1 - (this.inkDensityVariance / 350))};
-      ${this.blurVariance > 5 ? `filter: blur(${this.blurVariance * 0.003}px);` : ''}
-      transform: rotate(${this.rotationVariance * 0.2}deg) translateY(${this.baselineVariance * 0.4}px);
-      letter-spacing: ${this.spacingVariance * 0.009}em;
-      font-size: ${this.fontSize * (1 - this.sizeVariance * 0.004)}px;
+      opacity: ${Math.max(0.82, 1 - (this.inkDensityVariance / 175))};
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0.82, 1 - (this.inkDensityVariance / 175))});
+      ${this.blurVariance > 5 ? `filter: blur(${this.blurVariance * 0.008}px);` : ''}
+      transform: rotate(${this.rotationVariance * 0.4}deg) translateY(${this.baselineVariance * 0.8}px);
+      letter-spacing: ${this.spacingVariance * 0.018}em;
+      font-size: ${this.fontSize * (1 - this.sizeVariance * 0.008)}px;
     }
     li:nth-child(3n+2) {
-      opacity: ${Math.max(0.87, 1 - (this.inkDensityVariance / 450))};
-      transform: rotate(-${this.rotationVariance * 0.15}deg) translateY(-${this.baselineVariance * 0.3}px);
-      letter-spacing: ${this.spacingVariance * 0.011}em;
+      opacity: ${Math.max(0.87, 1 - (this.inkDensityVariance / 225))};
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0.87, 1 - (this.inkDensityVariance / 225))});
+      transform: rotate(-${this.rotationVariance * 0.3}deg) translateY(-${this.baselineVariance * 0.6}px);
+      letter-spacing: ${this.spacingVariance * 0.022}em;
     }
     li:nth-child(3n) {
-      opacity: ${Math.max(0.84, 1 - (this.inkDensityVariance / 400))};
-      ${this.blurVariance > 0 ? `filter: contrast(${1 - this.blurVariance * 0.002});` : ''}
-      transform: rotate(${this.rotationVariance * 0.18}deg);
-      font-size: ${this.fontSize * (1 + this.sizeVariance * 0.002)}px;
+      opacity: ${Math.max(0.84, 1 - (this.inkDensityVariance / 200))};
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0.84, 1 - (this.inkDensityVariance / 200))});
+      ${this.blurVariance > 0 ? `filter: contrast(${1 - this.blurVariance * 0.004});` : ''}
+      transform: rotate(${this.rotationVariance * 0.36}deg);
+      font-size: ${this.fontSize * (1 + this.sizeVariance * 0.004)}px;
     }
     ${this.enableMarginDoodles ? `
     /* Random pencil marks and margin annotations on paragraphs */
@@ -1018,16 +1039,16 @@ Generated: ${new Date().toLocaleString()}
     ` : ''}
     /* Pencil pressure effects - darker/lighter text based on ink density variance */
     p:nth-of-type(6n+1) {
-      color: rgba(50, 50, 50, ${0.85 + this.inkDensityVariance * 0.0012});
-      filter: contrast(${1 + this.inkDensityVariance * 0.0002});
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.85 + this.inkDensityVariance * 0.0024});
+      filter: contrast(${1 + this.inkDensityVariance * 0.0004});
     }
     p:nth-of-type(6n+3) {
-      color: rgba(65, 65, 65, ${0.76 + this.inkDensityVariance * 0.0015});
-      filter: contrast(${0.94 - this.blurVariance * 0.0003}) brightness(${1 + this.inkDensityVariance * 0.0004});
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.76 + this.inkDensityVariance * 0.003});
+      filter: contrast(${0.94 - this.blurVariance * 0.0006}) brightness(${1 + this.inkDensityVariance * 0.0008});
     }
     p:nth-of-type(6n+5) {
-      color: rgba(58, 58, 58, ${0.80 + this.inkDensityVariance * 0.0013});
-      filter: contrast(${0.97 - this.blurVariance * 0.0002}) ${this.blurVariance > 10 ? `blur(${this.blurVariance * 0.004}px)` : ''};
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.80 + this.inkDensityVariance * 0.0026});
+      filter: contrast(${0.97 - this.blurVariance * 0.0004}) ${this.blurVariance > 10 ? `blur(${this.blurVariance * 0.008}px)` : ''};
     }
     ${this.enableInkSpots ? `
     /* Random ink spots and bleed on specific elements */
@@ -1036,12 +1057,12 @@ Generated: ${new Date().toLocaleString()}
       position: absolute;
       top: 8px;
       right: -15px;
-      width: ${2 + this.blurVariance * 0.05}px;
-      height: ${2 + this.blurVariance * 0.05}px;
+      width: ${2 + this.blurVariance * 0.1}px;
+      height: ${2 + this.blurVariance * 0.1}px;
       border-radius: 50%;
-      background: rgba(80, 80, 80, ${0.1 + this.inkDensityVariance * 0.001});
-      box-shadow: 1px 1px 2px rgba(0,0,0,${0.03 + this.blurVariance * 0.0005});
-      ${this.blurVariance > 15 ? `filter: blur(${this.blurVariance * 0.02}px);` : ''}
+      background: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.1 + this.inkDensityVariance * 0.002});
+      box-shadow: 1px 1px 2px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.03 + this.blurVariance * 0.001});
+      ${this.blurVariance > 15 ? `filter: blur(${this.blurVariance * 0.04}px);` : ''}
     }
     ` : ''}
     ` : ''}
