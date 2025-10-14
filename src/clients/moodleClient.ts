@@ -356,7 +356,8 @@ export class MoodleClient implements LMSClient {
       try {
         console.log('Submitting for grading with assignmentid:', data.assignmentId);
         const gradingResult = await this.makeRequest('mod_assign_submit_for_grading', {
-          assignmentid: parseInt(data.assignmentId)
+          assignmentid: parseInt(data.assignmentId),
+          acceptsubmissionstatement: 1
         });
         console.log('Submit for grading result:', JSON.stringify(gradingResult, null, 2));
 

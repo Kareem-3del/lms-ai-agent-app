@@ -60,5 +60,8 @@ export interface LMSConfig {
   extraRules?: string;
   pdfHeaderFields?: string[]; // Fields to show in PDF header: 'name', 'id', 'course', 'dueDate', 'category', 'generated'
   useHandwriting?: boolean; // Use handwriting font and paper texture in PDFs
-  handwritingFont?: string; // Font family for handwriting: 'Caveat', 'Indie Flower', 'Patrick Hand', etc.
+  handwritingFont?: string; // Font family for handwriting: 'Homemade Apple', 'Caveat', 'Indie Flower', 'Patrick Hand', etc.
+  handwritingColor?: string; // Ink/text color for handwriting: hex color code (e.g., '#2d2d2d')
+  fontSize?: number; // Font size in pixels (14-24px)
+  paperStyle?: string; // Paper background style: 'aged-vintage', 'clean-white', 'lined-notebook', 'parchment', etc.
 }

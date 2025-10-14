@@ -1350,3 +1350,130 @@ main::-webkit-scrollbar-thumb:hover {
     gap: 0.4rem;
   }
 }
+
+/* Handwriting Modal Styles */
+.handwriting-modal {
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+}
+
+.handwriting-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tool-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.tool-group input[type="color"] {
+  width: 50px;
+  height: 35px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  background-color: var(--bg-primary);
+}
+
+.tool-group input[type="range"] {
+  width: 120px;
+}
+
+#penSizeValue {
+  font-weight: 600;
+  color: var(--accent-color);
+  min-width: 20px;
+  text-align: center;
+}
+
+.canvas-container {
+  width: 100%;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#handwritingCanvas {
+  cursor: crosshair;
+  touch-action: none;
+  max-width: 100%;
+  height: auto;
+}
+
+.handwriting-info {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.attachment-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.attachment-buttons .btn {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* Mobile handwriting adjustments */
+@media (max-width: 768px) {
+  .handwriting-modal {
+    width: 98%;
+    max-height: 95vh;
+  }
+
+  .handwriting-toolbar {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .tool-group {
+    flex: 1;
+    min-width: 100%;
+  }
+
+  .tool-group input[type="range"] {
+    flex: 1;
+  }
+
+  .canvas-container {
+    max-width: 100%;
+  }
+
+  #handwritingCanvas {
+    width: 100%;
+    height: auto;
+  }
+
+  .attachment-buttons {
+    flex-direction: column;
+  }
+
+  .attachment-buttons .btn {
+    width: 100%;
+    min-width: 100%;
+  }
+}

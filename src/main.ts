@@ -5,6 +5,8 @@ import { SettingsManager } from './services/settingsManager';
 import { AuthService } from './services/authService';
 import { GeminiService } from './services/geminiService';
 import { FileDownloader } from './services/fileDownloader';
+import { HandwritingService } from './services/handwritingService';
+import { PathManager } from './services/pathManager';
 
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
@@ -176,7 +178,10 @@ function setupIPC() {
         config.extraRules || '',
         config.pdfHeaderFields || ['name', 'id'],
         config.useHandwriting || false,
-        config.handwritingFont || 'Caveat'
+        config.handwritingFont || 'Homemade Apple',
+        config.handwritingColor || '#2d2d2d',
+        config.fontSize || 18,
+        config.paperStyle || 'aged-vintage'
       );
       const summary = await gemini.generateSummary(assignment);
       event.reply('summary-result', {
@@ -271,7 +276,10 @@ function setupIPC() {
         config.extraRules || '',
         config.pdfHeaderFields || ['name', 'id'],
         config.useHandwriting || false,
-        config.handwritingFont || 'Caveat'
+        config.handwritingFont || 'Homemade Apple',
+        config.handwritingColor || '#2d2d2d',
+        config.fontSize || 18,
+        config.paperStyle || 'aged-vintage'
       );
       const solution = await gemini.solveAssignment(assignment, downloadedFiles, pdfImages, docxTexts);
       const filePath = await gemini.saveSolution(assignment, solution);
@@ -374,7 +382,7 @@ function setupIPC() {
         return;
       }
 
-      const gemini = new GeminiService(apiKey, undefined, undefined, '', ['name', 'id'], false, 'Caveat');
+      const gemini = new GeminiService(apiKey, undefined, undefined, '', ['name', 'id'], false, 'Homemade Apple', '#2d2d2d', 18, 'aged-vintage');
       const models = await gemini.listAvailableModels();
       event.reply('gemini-models-result', models);
     } catch (error: any) {
@@ -508,6 +516,12 @@ app.whenReady().then(() => {
 
   settingsManager = new SettingsManager();
   assignmentChecker = new AssignmentChecker(settingsManager);
+
+  // Initialize HandwritingService
+  const settings = settingsManager.getSettings();
+  const pathManager = new PathManager(settings?.downloadPath);
+  const handwritingService = new HandwritingService(pathManager);
+
   setupIPC();
 
   app.on('activate', () => {

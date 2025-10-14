@@ -124,21 +124,120 @@ Example:
 
         <div class="form-group">
           <label>
-            <input type="checkbox" id="useHandwriting" name="useHandwriting">
+            <input type="checkbox" id="useHandwriting" name="useHandwriting" checked>
             Use handwriting style for PDFs
           </label>
-          <small>Makes the PDF look like handwritten notes with natural font and paper texture</small>
+          <small>Makes text look handwritten with natural fonts and paper texture. Math equations rendered beautifully with LaTeX.</small>
         </div>
 
         <div class="form-group" id="handwritingOptions" style="display: none; margin-left: 1.5rem;">
           <label for="handwritingFont">Handwriting Font Style:</label>
           <select id="handwritingFont" name="handwritingFont">
-            <option value="Caveat">Caveat (Natural & Casual)</option>
-            <option value="Indie Flower">Indie Flower (Playful)</option>
-            <option value="Patrick Hand">Patrick Hand (Clean)</option>
-            <option value="Shadows Into Light">Shadows Into Light (Elegant)</option>
-            <option value="Kalam">Kalam (Bold)</option>
+            <optgroup label="⭐ Most Realistic & Natural">
+              <option value="Homemade Apple" selected>Homemade Apple (Most Authentic)</option>
+              <option value="Just Another Hand">Just Another Hand (Very Natural)</option>
+              <option value="Covered By Your Grace">Covered By Your Grace (Casual)</option>
+              <option value="Patrick Hand">Patrick Hand (Clean & Readable)</option>
+              <option value="Handlee">Handlee (Neat Handwriting)</option>
+            </optgroup>
+            <optgroup label="📝 Casual & Friendly">
+              <option value="Caveat">Caveat (Natural & Casual)</option>
+              <option value="Indie Flower">Indie Flower (Playful)</option>
+              <option value="Shadows Into Light">Shadows Into Light (Elegant)</option>
+              <option value="Architects Daughter">Architects Daughter (Casual)</option>
+              <option value="Gloria Hallelujah">Gloria Hallelujah (Cheerful)</option>
+              <option value="Gochi Hand">Gochi Hand (Rounded)</option>
+              <option value="The Girl Next Door">The Girl Next Door (Friendly)</option>
+            </optgroup>
+            <optgroup label="✍️ Bold & Expressive">
+              <option value="Kalam">Kalam (Bold)</option>
+              <option value="Permanent Marker">Permanent Marker (Marker Style)</option>
+              <option value="Rock Salt">Rock Salt (Rough)</option>
+              <option value="Amatic SC">Amatic SC (Bold Casual)</option>
+            </optgroup>
+            <optgroup label="💫 Flowing & Elegant">
+              <option value="Dancing Script">Dancing Script (Flowing Cursive)</option>
+              <option value="Satisfy">Satisfy (Elegant Script)</option>
+              <option value="Courgette">Courgette (Flowing)</option>
+              <option value="League Script">League Script (Elegant)</option>
+              <option value="Waiting for the Sunrise">Waiting for the Sunrise (Flowing)</option>
+            </optgroup>
+            <optgroup label="🎨 Unique & Artistic">
+              <option value="Reenie Beanie">Reenie Beanie (Natural Script)</option>
+              <option value="Sue Ellen Francisco">Sue Ellen Francisco (Casual Script)</option>
+              <option value="Schoolbell">Schoolbell (Educational)</option>
+              <option value="Comic Neue">Comic Neue (Modern Comic)</option>
+            </optgroup>
           </select>
+          <small>Choose the font that best matches your natural handwriting style</small>
+        </div>
+
+        <div class="form-group" id="handwritingColorSize" style="display: none; margin-left: 1.5rem;">
+          <label for="handwritingColor">Ink Color:</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="color" id="handwritingColor" name="handwritingColor" value="#2d2d2d">
+            <span id="handwritingColorPreview" style="font-size: 14px; color: #666;">Dark Gray (Natural)</span>
+          </div>
+          <small>Choose your pen/ink color (default: natural dark gray)</small>
+        </div>
+
+        <div class="form-group" id="handwritingFontSize" style="display: none; margin-left: 1.5rem;">
+          <label for="fontSize">Font Size:</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="range" id="fontSize" name="fontSize" min="14" max="24" value="18" step="1">
+            <span id="fontSizeValue" style="min-width: 50px;">18px</span>
+          </div>
+          <small>Adjust the text size (14px - 24px, default: 18px)</small>
+        </div>
+
+        <div class="form-group" id="handwritingPaperStyle" style="display: none; margin-left: 1.5rem;">
+          <label for="paperStyle">Paper Style:</label>
+          <select id="paperStyle" name="paperStyle">
+            <optgroup label="📄 Classic Papers">
+              <option value="aged-vintage" selected>Aged Vintage Paper (Coffee Stains)</option>
+              <option value="clean-white">Clean White Paper</option>
+              <option value="cream-white">Cream White Paper</option>
+              <option value="off-white">Off-White Paper</option>
+              <option value="recycled">Recycled Paper (Eco)</option>
+            </optgroup>
+            <optgroup label="📓 Notebook Styles">
+              <option value="lined-notebook">Lined Notebook Paper</option>
+              <option value="college-ruled">College Ruled Paper</option>
+              <option value="wide-ruled">Wide Ruled Paper</option>
+              <option value="graph-paper">Graph Paper (Grid)</option>
+              <option value="dot-grid">Dot Grid Paper</option>
+              <option value="engineering">Engineering Paper</option>
+            </optgroup>
+            <optgroup label="🎨 Textured & Artistic">
+              <option value="parchment">Parchment Paper (Ancient)</option>
+              <option value="watercolor">Watercolor Paper</option>
+              <option value="canvas-texture">Canvas Texture</option>
+              <option value="linen">Linen Paper</option>
+              <option value="kraft">Kraft Paper (Brown)</option>
+              <option value="newsprint">Newsprint (Gray)</option>
+            </optgroup>
+            <optgroup label="☕ Aged & Worn">
+              <option value="tea-stained">Tea Stained Paper</option>
+              <option value="coffee-aged">Coffee Aged Paper</option>
+              <option value="vintage-worn">Vintage Worn Paper</option>
+              <option value="burned-edges">Burned Edges Paper</option>
+              <option value="old-book">Old Book Page</option>
+            </optgroup>
+            <optgroup label="💼 Professional">
+              <option value="legal-pad">Legal Pad (Yellow)</option>
+              <option value="blueprint">Blueprint Paper</option>
+              <option value="ledger">Ledger Paper</option>
+              <option value="vellum">Vellum Paper</option>
+            </optgroup>
+            <optgroup label="🌈 Colored Papers">
+              <option value="pastel-blue">Pastel Blue</option>
+              <option value="pastel-pink">Pastel Pink</option>
+              <option value="pastel-yellow">Pastel Yellow</option>
+              <option value="pastel-green">Pastel Green</option>
+              <option value="light-gray">Light Gray</option>
+            </optgroup>
+          </select>
+          <small>Choose paper texture and background style</small>
         </div>
 
         <div class="form-actions">
@@ -227,9 +326,14 @@ Example:
           <div id="submissionAttachments" class="submission-attachments">
             <!-- Attachments will be populated here -->
           </div>
-          <button type="button" class="btn btn-secondary" onclick="addCustomAttachment()">
-            + Add File
-          </button>
+          <div class="attachment-buttons">
+            <button type="button" class="btn btn-secondary" onclick="addCustomAttachment()">
+              + Add File
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="openHandwritingModal()">
+              ✏️ Handwrite Solution
+            </button>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -239,6 +343,48 @@ Example:
     </div>
   </div>
 
+  <!-- Handwriting Modal -->
+  <div id="handwritingModal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeHandwritingModal()"></div>
+    <div class="modal-content handwriting-modal">
+      <div class="modal-header">
+        <h2>Handwriting Pad</h2>
+        <button class="btn-close" onclick="closeHandwritingModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="handwriting-toolbar">
+          <div class="tool-group">
+            <label>Pen Color:</label>
+            <input type="color" id="penColor" value="#000000">
+          </div>
+          <div class="tool-group">
+            <label>Pen Size:</label>
+            <input type="range" id="penSize" min="1" max="10" value="2" step="0.5">
+            <span id="penSizeValue">2</span>px
+          </div>
+          <div class="tool-group">
+            <button class="btn btn-secondary" onclick="clearCanvas()">Clear</button>
+            <button class="btn btn-secondary" onclick="undoStroke()">Undo</button>
+          </div>
+        </div>
+
+        <div class="canvas-container">
+          <canvas id="handwritingCanvas" width="800" height="600"></canvas>
+        </div>
+
+        <div class="handwriting-info">
+          <small>Draw your solution above. You can save it as an image or PDF.</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeHandwritingModal()">Cancel</button>
+        <button class="btn btn-secondary" onclick="saveAsImage()">Save as Image</button>
+        <button class="btn btn-primary" onclick="saveAsPDF()">Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="handwriting.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

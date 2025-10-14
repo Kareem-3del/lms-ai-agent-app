@@ -22,7 +22,12 @@ export class SettingsManager {
         geminiApiKey: '',
         geminiModel: 'gemini-2.0-flash-exp',
         extraRules: '',
-        pdfHeaderFields: ['name', 'id']
+        pdfHeaderFields: ['name', 'id'],
+        useHandwriting: true,
+        handwritingFont: 'Homemade Apple',
+        handwritingColor: '#2d2d2d',
+        fontSize: 18,
+        paperStyle: 'aged-vintage'
       }
     });
   }
@@ -42,7 +47,12 @@ export class SettingsManager {
       geminiApiKey: this.store.get('geminiApiKey'),
       geminiModel: this.store.get('geminiModel'),
       extraRules: this.store.get('extraRules'),
-      pdfHeaderFields: this.store.get('pdfHeaderFields')
+      pdfHeaderFields: this.store.get('pdfHeaderFields'),
+      useHandwriting: this.store.get('useHandwriting'),
+      handwritingFont: this.store.get('handwritingFont'),
+      handwritingColor: this.store.get('handwritingColor'),
+      fontSize: this.store.get('fontSize'),
+      paperStyle: this.store.get('paperStyle')
     };
   }
 
@@ -61,6 +71,11 @@ export class SettingsManager {
     if (config.geminiModel !== undefined) this.store.set('geminiModel', config.geminiModel);
     if (config.extraRules !== undefined) this.store.set('extraRules', config.extraRules);
     if (config.pdfHeaderFields !== undefined) this.store.set('pdfHeaderFields', config.pdfHeaderFields);
+    if (config.useHandwriting !== undefined) this.store.set('useHandwriting', config.useHandwriting);
+    if (config.handwritingFont !== undefined) this.store.set('handwritingFont', config.handwritingFont);
+    if (config.handwritingColor !== undefined) this.store.set('handwritingColor', config.handwritingColor);
+    if (config.fontSize !== undefined) this.store.set('fontSize', config.fontSize);
+    if (config.paperStyle !== undefined) this.store.set('paperStyle', config.paperStyle);
   }
 
   isConfigured(): boolean {

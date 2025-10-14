@@ -103,14 +103,57 @@ useCredentialLogin.addEventListener('change', () => {
 // Handwriting toggle
 const useHandwriting = document.getElementById('useHandwriting');
 const handwritingOptions = document.getElementById('handwritingOptions');
+const handwritingColorSize = document.getElementById('handwritingColorSize');
+const handwritingFontSize = document.getElementById('handwritingFontSize');
+const handwritingPaperStyle = document.getElementById('handwritingPaperStyle');
 
 useHandwriting.addEventListener('change', () => {
   if (useHandwriting.checked) {
     handwritingOptions.style.display = 'block';
+    handwritingColorSize.style.display = 'block';
+    handwritingFontSize.style.display = 'block';
+    handwritingPaperStyle.style.display = 'block';
   } else {
     handwritingOptions.style.display = 'none';
+    handwritingColorSize.style.display = 'none';
+    handwritingFontSize.style.display = 'none';
+    handwritingPaperStyle.style.display = 'none';
   }
 });
+
+// Font size slider value display
+const fontSizeSlider = document.getElementById('fontSize');
+const fontSizeValue = document.getElementById('fontSizeValue');
+
+fontSizeSlider.addEventListener('input', () => {
+  fontSizeValue.textContent = `${fontSizeSlider.value}px`;
+});
+
+// Handwriting color preview
+const handwritingColorPicker = document.getElementById('handwritingColor');
+const handwritingColorPreview = document.getElementById('handwritingColorPreview');
+
+function updateColorPreview() {
+  const color = handwritingColorPicker.value;
+  handwritingColorPreview.style.color = color;
+
+  // Convert hex to color name description
+  const colorNames = {
+    '#000000': 'Black',
+    '#2d2d2d': 'Dark Gray (Natural)',
+    '#1a1a1a': 'Almost Black',
+    '#003366': 'Dark Blue',
+    '#000080': 'Navy Blue',
+    '#8b4513': 'Brown',
+    '#654321': 'Dark Brown',
+    '#2c3e50': 'Dark Slate'
+  };
+
+  handwritingColorPreview.textContent = colorNames[color] || color;
+}
+
+handwritingColorPicker.addEventListener('input', updateColorPreview);
+handwritingColorPicker.addEventListener('change', updateColorPreview);
 
 // Tab switching
 tabBtns.forEach(btn => {
@@ -171,7 +214,10 @@ settingsForm.addEventListener('submit', (e) => {
     extraRules: formData.get('extraRules'),
     pdfHeaderFields: pdfHeaderFields,
     useHandwriting: formData.get('useHandwriting') === 'on',
-    handwritingFont: formData.get('handwritingFont') || 'Caveat'
+    handwritingFont: formData.get('handwritingFont') || 'Homemade Apple',
+    handwritingColor: formData.get('handwritingColor') || '#2d2d2d',
+    fontSize: parseInt(formData.get('fontSize')) || 18,
+    paperStyle: formData.get('paperStyle') || 'aged-vintage'
   };
 
   if (useCredentials) {
@@ -213,9 +259,20 @@ ipcRenderer.on('settings-loaded', (event, loadedSettings) => {
 
     // Set handwriting settings
     document.getElementById('useHandwriting').checked = settings.useHandwriting || false;
-    document.getElementById('handwritingFont').value = settings.handwritingFont || 'Caveat';
+    document.getElementById('handwritingFont').value = settings.handwritingFont || 'Homemade Apple';
+    document.getElementById('handwritingColor').value = settings.handwritingColor || '#2d2d2d';
+    document.getElementById('fontSize').value = settings.fontSize || 18;
+    document.getElementById('fontSizeValue').textContent = `${settings.fontSize || 18}px`;
+    document.getElementById('paperStyle').value = settings.paperStyle || 'aged-vintage';
+
+    // Update color preview
+    updateColorPreview();
+
     if (settings.useHandwriting) {
       document.getElementById('handwritingOptions').style.display = 'block';
+      document.getElementById('handwritingColorSize').style.display = 'block';
+      document.getElementById('handwritingFontSize').style.display = 'block';
+      document.getElementById('handwritingPaperStyle').style.display = 'block';
     }
 
     const useCredentials = settings.useCredentialLogin !== false;

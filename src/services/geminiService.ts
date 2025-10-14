@@ -16,6 +16,9 @@ export class GeminiService {
   private pdfHeaderFields: string[];
   private useHandwriting: boolean;
   private handwritingFont: string;
+  private handwritingColor: string;
+  private fontSize: number;
+  private paperStyle: string;
 
   constructor(
     apiKey: string,
@@ -23,8 +26,11 @@ export class GeminiService {
     customPath?: string,
     extraRules: string = '',
     pdfHeaderFields: string[] = ['name', 'id'],
-    useHandwriting: boolean = false,
-    handwritingFont: string = 'Caveat'
+    useHandwriting: boolean = true,
+    handwritingFont: string = 'Homemade Apple',
+    handwritingColor: string = '#2d2d2d',
+    fontSize: number = 18,
+    paperStyle: string = 'aged-vintage'
   ) {
     this.apiKey = apiKey;
     this.modelName = modelName;
@@ -32,6 +38,9 @@ export class GeminiService {
     this.pdfHeaderFields = pdfHeaderFields;
     this.useHandwriting = useHandwriting;
     this.handwritingFont = handwritingFont;
+    this.handwritingColor = handwritingColor;
+    this.fontSize = fontSize;
+    this.paperStyle = paperStyle;
     this.pathManager = new PathManager(customPath);
     this.preferencesFilePath = path.join(
       customPath || app.getPath('userData'),
@@ -606,17 +615,74 @@ Generated: ${new Date().toLocaleString()}
     }
   }
 
+  private getPaperBackground(): string {
+    if (!this.useHandwriting || this.paperStyle === 'clean-white') {
+      return 'background: white;';
+    }
+
+    const paperStyles: { [key: string]: string } = {
+      'aged-vintage': `
+        background-color: #f8f6f0;
+        background-image:
+          radial-gradient(circle at 15% 10%, rgba(80, 80, 80, 0.04) 0%, transparent 15%),
+          radial-gradient(ellipse at 75% 25%, rgba(139, 90, 43, 0.09) 0%, transparent 35%),
+          repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,.01) 1px, rgba(0,0,0,.01) 2px),
+          linear-gradient(180deg, rgba(255, 248, 220, 0.25) 0%, rgba(245, 230, 195, 0.2) 100%);
+        box-shadow: inset 0 0 150px rgba(222, 184, 135, 0.18);
+      `,
+      'cream-white': `background-color: #fffef7; background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,.005) 1px, rgba(0,0,0,.005) 2px);`,
+      'off-white': `background-color: #fafaf8;`,
+      'recycled': `background-color: #f5f5dc; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.01) 10px, rgba(0,0,0,.01) 11px);`,
+      'lined-notebook': `background: linear-gradient(transparent 0%, transparent calc(100% - 1px), #e0e0e0 calc(100% - 1px)), #ffffff; background-size: 100% 2em;`,
+      'college-ruled': `background: linear-gradient(transparent 0%, transparent calc(100% - 1px), #a8d1ff 33.33%, #ffffff 33.33%, transparent calc(33.33% + 1px));`,
+      'wide-ruled': `background: linear-gradient(transparent 0%, transparent calc(100% - 1px), #d0d0f0 25%, #ffffff 25%); background-size: 100% 3em;`,
+      'graph-paper': `background-color: #f9f9f9; background-image: repeating-linear-gradient(0deg, #e0e0e0 0px, #e0e0e0 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, #e0e0e0 0px, #e0e0e0 1px, transparent 1px, transparent 20px);`,
+      'dot-grid': `background-color: #ffffff; background-image: radial-gradient(circle, #d0d0d0 1px, transparent 1px); background-size: 20px 20px;`,
+      'engineering': `background-color: #f0f5f0; background-image: repeating-linear-gradient(0deg, #c8e6c9 0px, #c8e6c9 0.5px, transparent 0.5px, transparent 10px);`,
+      'parchment': `background-color: #f4e8d0; background-image: radial-gradient(ellipse at 60% 40%, rgba(139, 90, 43, 0.15) 0%, transparent 50%), linear-gradient(180deg, rgba(210, 180, 140, 0.3) 0%, rgba(180, 150, 110, 0.2) 100%);`,
+      'watercolor': `background: linear-gradient(135deg, #fef9f3 0%, #f7f4ed 25%, #fefaf4 50%, #f9f6f0 75%, #fdfbf7 100%);`,
+      'canvas-texture': `background-color: #faf8f5; background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 3px);`,
+      'linen': `background-color: #faf0e6; background-image: linear-gradient(90deg, rgba(139,69,19,0.03) 50%, transparent 50%); background-size: 2px 2px;`,
+      'kraft': `background: linear-gradient(135deg, #d4a574 0%, #c89968 50%, #bc8f5e 100%);`,
+      'newsprint': `background-color: #e8e8e8; background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 1px, transparent 1px, transparent 2px);`,
+      'tea-stained': `background: radial-gradient(ellipse at 50% 50%, #f5deb3 0%, #daa520 100%); opacity: 0.3;`,
+      'coffee-aged': `background-color: #d2b48c; background-image: radial-gradient(circle at 30% 40%, rgba(101, 67, 33, 0.15) 0%, transparent 60%);`,
+      'vintage-worn': `background-color: #f0e68c; background-image: radial-gradient(circle, rgba(139, 90, 43, 0.12) 0%, transparent 50%), linear-gradient(180deg, rgba(210, 180, 140, 0.4) 0%, rgba(139, 90, 43, 0.2) 100%);`,
+      'burned-edges': `background: linear-gradient(to right, rgba(101, 67, 33, 0.2) 0%, #f4e8d0 5%, #f4e8d0 95%, rgba(101, 67, 33, 0.2) 100%);`,
+      'old-book': `background-color: #f9f3e6; background-image: linear-gradient(90deg, rgba(139,69,19,0.1) 0%, transparent 10%);`,
+      'legal-pad': `background-color: #ffffcc; background-image: repeating-linear-gradient(transparent, transparent 2em, #ffcccc 2em, #ffcccc calc(2em + 1px));`,
+      'blueprint': `background-color: #1e3a8a; color: white !important; background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, transparent 1px, transparent 20px);`,
+      'ledger': `background-color: #f0f8ff; background-image: repeating-linear-gradient(0deg, transparent, transparent 2.5em, #b0c4de calc(2.5em), #b0c4de calc(2.5em + 1px));`,
+      'vellum': `background-color: #fffef0; background-image: radial-gradient(ellipse, rgba(245, 245, 220, 0.5) 0%, transparent 70%);`,
+      'pastel-blue': `background-color: #e6f2ff;`,
+      'pastel-pink': `background-color: #ffe6f0;`,
+      'pastel-yellow': `background-color: #fffacd;`,
+      'pastel-green': `background-color: #e6ffe6;`,
+      'light-gray': `background-color: #f5f5f5;`
+    };
+
+    return paperStyles[this.paperStyle] || paperStyles['aged-vintage'];
+  }
+
   private async convertMarkdownToPdf(markdownContent: string, pdfPath: string): Promise<void> {
     const { BrowserWindow } = require('electron');
     const MarkdownIt = require('markdown-it');
     const katex = require('katex');
+    const handwritten = require('handwritten.js');
 
     // Debug: Log handwriting settings
     console.log('PDF Generation Settings:', {
       useHandwriting: this.useHandwriting,
       handwritingFont: this.handwritingFont,
+      handwritingColor: this.handwritingColor,
+      fontSize: this.fontSize,
+      paperStyle: this.paperStyle,
       extraRules: this.extraRules ? this.extraRules.substring(0, 50) + '...' : 'none'
     });
+
+    // For handwriting mode, we'll use the HTML rendering approach below
+    // with handwriting fonts + proper LaTeX rendering (not handwritten.js)
+    // This gives us the best of both worlds: handwritten style + beautiful math
 
     // Initialize markdown-it
     const md = new MarkdownIt({
@@ -671,16 +737,8 @@ Generated: ${new Date().toLocaleString()}
       ? `https://fonts.googleapis.com/css2?family=${this.handwritingFont.replace(/ /g, '+')}:wght@400;700&display=swap`
       : '';
 
-    // Paper texture background - using CSS to create a subtle paper effect
-    const paperBackground = this.useHandwriting
-      ? `
-      background-color: #fefefe;
-      background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px),
-        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,.02) 2px, rgba(0,0,0,.02) 4px);
-      box-shadow: inset 0 0 100px rgba(255, 248, 220, 0.3);
-      `
-      : 'background: white;';
+    // Get paper background from user settings
+    const paperBackground = this.getPaperBackground();
 
     // Create HTML with KaTeX CSS and proper styling
     const fullHtml = `
@@ -693,42 +751,305 @@ Generated: ${new Date().toLocaleString()}
   <style>
     body {
       font-family: ${fontFamily};
-      line-height: ${this.useHandwriting ? '2.0' : '1.6'};
-      color: ${this.useHandwriting ? '#2c2c2c' : '#333'};
+      line-height: ${this.useHandwriting ? '2.2' : '1.6'};
+      color: ${this.useHandwriting ? this.handwritingColor : '#333'};
       max-width: 800px;
       margin: 40px auto;
       padding: 20px;
       ${paperBackground}
+      font-weight: ${this.useHandwriting ? '400' : 'normal'};
+      position: relative;
     }
+    ${this.useHandwriting ? `
+    /* Faded ink bleed effect with more variation */
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        /* Ink bleeds */
+        radial-gradient(circle at 18% 28%, rgba(52, 73, 94, 0.04) 0%, transparent 45%),
+        radial-gradient(circle at 65% 55%, rgba(52, 73, 94, 0.05) 0%, transparent 38%),
+        radial-gradient(circle at 42% 78%, rgba(52, 73, 94, 0.03) 0%, transparent 32%),
+        radial-gradient(circle at 88% 35%, rgba(52, 73, 94, 0.035) 0%, transparent 28%);
+      pointer-events: none;
+      z-index: 1;
+      filter: blur(0.5px);
+    }
+    /* Enhanced margin doodles and scribbles */
+    body::after {
+      content: '~ ✓ ★ ⟿ ◯ ✗';
+      position: absolute;
+      top: 45px;
+      right: 25px;
+      font-size: 13px;
+      color: rgba(65, 65, 65, 0.28);
+      transform: rotate(-12deg);
+      letter-spacing: 6px;
+      pointer-events: none;
+      z-index: 1;
+      text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.05);
+    }
+    ` : ''}
     h1 {
-      color: #2c3e50;
-      border-bottom: 3px solid #3498db;
+      color: ${this.useHandwriting ? '#3d4f5c' : '#2c3e50'};
+      border-bottom: ${this.useHandwriting ? '2px solid rgba(52, 152, 219, 0.6)' : '3px solid #3498db'};
       padding-bottom: 10px;
-      font-size: ${this.useHandwriting ? '32px' : '28px'};
+      font-size: ${this.useHandwriting ? `${this.fontSize * 1.78}px` : '28px'};
+      ${this.useHandwriting ? `
+      transform: rotate(-0.3deg);
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+      letter-spacing: 0.02em;
+      position: relative;
+      filter: contrast(0.98) brightness(1.02);
+      ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Add hand-drawn underline effect to h1 */
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 0;
+      width: 30%;
+      height: 2px;
+      background: rgba(52, 152, 219, 0.4);
+      transform: rotate(-0.5deg);
+      border-radius: 50%;
+    }
+    /* Scribbles near h1 */
+    h1::before {
+      content: '~ ∼ ≈';
+      position: absolute;
+      bottom: -12px;
+      left: -30px;
+      font-size: 11px;
+      color: rgba(70, 70, 70, 0.22);
+      transform: rotate(5deg);
+      letter-spacing: 4px;
+    }
+    ` : ''}
     h2 {
-      color: #34495e;
+      color: ${this.useHandwriting ? '#4a5568' : '#34495e'};
       margin-top: 30px;
-      font-size: ${this.useHandwriting ? '26px' : '22px'};
-      border-bottom: 2px solid #ecf0f1;
+      font-size: ${this.useHandwriting ? `${this.fontSize * 1.44}px` : '22px'};
+      border-bottom: ${this.useHandwriting ? '1px dashed rgba(236, 240, 241, 0.5)' : '2px solid #ecf0f1'};
       padding-bottom: 8px;
+      ${this.useHandwriting ? `
+      transform: rotate(0.2deg);
+      letter-spacing: 0.015em;
+      position: relative;
+      filter: contrast(0.97);
+      ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Margin note for h2 */
+    h2::before {
+      content: '→';
+      position: absolute;
+      left: -25px;
+      color: rgba(80, 80, 80, 0.3);
+      font-size: 16px;
+      transform: rotate(-5deg);
+    }
+    /* Additional doodles on certain h2 */
+    h2:nth-of-type(3)::after {
+      content: '✧';
+      position: absolute;
+      right: -20px;
+      top: 2px;
+      color: rgba(80, 80, 80, 0.25);
+      font-size: 14px;
+      transform: rotate(-8deg);
+    }
+    ` : ''}
     h3 {
-      color: #34495e;
-      font-size: ${this.useHandwriting ? '22px' : '18px'};
+      color: ${this.useHandwriting ? '#525f6f' : '#34495e'};
+      font-size: ${this.useHandwriting ? `${this.fontSize * 1.22}px` : '18px'};
       margin-top: 20px;
+      ${this.useHandwriting ? `
+      transform: rotate(-0.1deg);
+      letter-spacing: 0.01em;
+      filter: contrast(0.96) brightness(1.01);
+      position: relative;
+      ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Random doodles on h3 */
+    h3:nth-of-type(2)::before {
+      content: '◦';
+      position: absolute;
+      left: -18px;
+      color: rgba(75, 75, 75, 0.3);
+      font-size: 10px;
+    }
+    ` : ''}
     p, li {
-      font-size: ${this.useHandwriting ? '18px' : '16px'};
+      font-size: ${this.useHandwriting ? `${this.fontSize}px` : '16px'};
+      ${this.useHandwriting ? `
+      opacity: 0.91;
+      color: rgba(58, 58, 58, 0.93);
+      text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.03);
+      letter-spacing: 0.005em;
+      word-spacing: 0.08em;
+      filter: contrast(0.95);
+      position: relative;
+      /* Simulate pencil pressure variations through subtle spacing */
+      line-height: 2.25;
+      ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Add ink bleed effect to certain words */
+    strong, b {
+      filter: contrast(0.98) brightness(0.98);
+      text-shadow: 0.3px 0.3px 0.8px rgba(0,0,0,0.08);
+      letter-spacing: 0.008em;
+    }
+    em, i {
+      opacity: 0.88;
+      color: rgba(55, 55, 55, 0.90);
+    }
+    ` : ''}
+    ${this.useHandwriting ? `
+    /* Uneven text with more variation */
+    p:nth-child(4n+1) {
+      transform: rotate(0.15deg);
+      opacity: 0.89;
+    }
+    p:nth-child(4n+2) {
+      transform: rotate(-0.2deg);
+      opacity: 0.92;
+    }
+    p:nth-child(4n+3) {
+      transform: rotate(0.08deg);
+      opacity: 0.90;
+    }
+    p:nth-child(4n) {
+      transform: rotate(-0.12deg);
+      opacity: 0.93;
+    }
+    /* Faded and smudged text for lists */
+    li:nth-child(3n+1) {
+      opacity: 0.87;
+      filter: blur(0.15px);
+    }
+    li:nth-child(3n+2) {
+      opacity: 0.91;
+    }
+    li:nth-child(3n) {
+      opacity: 0.89;
+      filter: contrast(0.93);
+    }
+    /* Random pencil marks and margin annotations on paragraphs */
+    p:nth-of-type(5)::before {
+      content: '✓';
+      position: absolute;
+      left: -20px;
+      color: rgba(90, 90, 90, 0.25);
+      font-size: 14px;
+      transform: rotate(-8deg);
+    }
+    p:nth-of-type(9)::before {
+      content: '!';
+      position: absolute;
+      left: -18px;
+      color: rgba(85, 85, 85, 0.28);
+      font-size: 13px;
+      transform: rotate(5deg);
+    }
+    p:nth-of-type(13)::before {
+      content: '★';
+      position: absolute;
+      left: -22px;
+      color: rgba(95, 95, 95, 0.22);
+      font-size: 12px;
+      transform: rotate(-12deg);
+    }
+    /* Pencil pressure effects - darker/lighter text */
+    p:nth-of-type(6n+1) {
+      color: rgba(50, 50, 50, 0.95);
+      filter: contrast(1.02);
+    }
+    p:nth-of-type(6n+3) {
+      color: rgba(65, 65, 65, 0.86);
+      filter: contrast(0.94) brightness(1.03);
+    }
+    p:nth-of-type(6n+5) {
+      color: rgba(58, 58, 58, 0.90);
+      filter: contrast(0.97) blur(0.18px);
+    }
+    /* Random ink spots and bleed on specific elements */
+    p:nth-of-type(7)::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: -15px;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(80, 80, 80, 0.15);
+      box-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+    }
+    ` : ''}
     .math-display {
       margin: 20px 0;
       text-align: center;
-      font-size: 1.2em;
+      font-size: ${this.useHandwriting ? `${this.fontSize * 1.4}px` : '1.2em'};
+      padding: ${this.useHandwriting ? '10px' : '0'};
+      ${this.useHandwriting ? `
+      transform: rotate(0.2deg);
+      opacity: 0.94;
+      color: rgba(45, 55, 65, 0.92);
+      ` : ''}
     }
     .katex {
-      font-size: 1.1em;
+      font-size: ${this.useHandwriting ? `${this.fontSize * 1.2}px` : '1.1em'};
+      ${this.useHandwriting
+        ? `font-family: '${this.handwritingFont}', cursive !important;
+           color: rgba(40, 50, 60, 0.9) !important;`
+        : `font-family: 'KaTeX_Main', 'Times New Roman', serif !important;`
+      }
     }
+    /* Apply handwriting font to all KaTeX math elements when handwriting is enabled */
+    ${this.useHandwriting ? `
+    .katex, .katex-html, .katex * {
+      font-family: '${this.handwritingFont}', cursive !important;
+      font-style: normal !important;
+      color: rgba(40, 50, 60, 0.88) !important;
+      position: relative;
+    }
+    .katex .mord, .katex .mbin, .katex .mrel, .katex .mop,
+    .katex .mopen, .katex .mclose, .katex .mpunct, .katex .minner {
+      font-family: '${this.handwritingFont}', cursive !important;
+    }
+    /* Slight variations in math rendering with ink effects */
+    .math-display:nth-of-type(odd) .katex {
+      opacity: 0.90;
+      filter: contrast(0.96);
+    }
+    .math-display:nth-of-type(even) .katex {
+      opacity: 0.93;
+      filter: contrast(0.94) blur(0.12px);
+    }
+    .math-display:nth-of-type(3n+1) {
+      transform: rotate(0.18deg);
+    }
+    .math-display:nth-of-type(3n+2) {
+      transform: rotate(-0.15deg);
+    }
+    /* Add small ink spots near equations */
+    .math-display:nth-of-type(4)::before {
+      content: '·';
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      color: rgba(80, 80, 80, 0.2);
+      font-size: 20px;
+    }
+    ` : ''}
     table {
       border-collapse: collapse;
       width: 100%;
@@ -748,36 +1069,141 @@ Generated: ${new Date().toLocaleString()}
       background-color: ${this.useHandwriting ? 'rgba(249, 249, 249, 0.3)' : '#f9f9f9'};
     }
     code {
-      background-color: ${this.useHandwriting ? 'rgba(244, 244, 244, 0.5)' : '#f4f4f4'};
+      background-color: ${this.useHandwriting ? 'rgba(244, 244, 244, 0.4)' : '#f4f4f4'};
       padding: 2px 6px;
       border-radius: 3px;
-      font-family: 'Courier New', monospace;
+      font-family: ${this.useHandwriting ? `'${this.handwritingFont}', 'Courier New', monospace` : `'Courier New', monospace`};
       font-size: 0.9em;
+      ${this.useHandwriting ? `
+      opacity: 0.9;
+      color: rgba(60, 60, 60, 0.88);
+      filter: contrast(0.96);
+      border: 1px solid rgba(200, 200, 200, 0.3);
+      ` : ''}
     }
     pre {
-      background-color: ${this.useHandwriting ? 'rgba(244, 244, 244, 0.5)' : '#f4f4f4'};
+      background-color: ${this.useHandwriting ? 'rgba(244, 244, 244, 0.3)' : '#f4f4f4'};
       padding: 15px;
       border-radius: 5px;
       overflow-x: auto;
-      border-left: 4px solid #3498db;
+      border-left: ${this.useHandwriting ? '3px dashed rgba(52, 152, 219, 0.5)' : '4px solid #3498db'};
+      ${this.useHandwriting ? `
+      transform: rotate(-0.2deg);
+      opacity: 0.92;
+      position: relative;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Add corner fold effect to code blocks */
+    pre::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-top: 10px solid rgba(150, 150, 150, 0.15);
+    }
+    ` : ''}
     pre code {
       background: none;
       padding: 0;
     }
     blockquote {
-      border-left: 4px solid #3498db;
+      border-left: ${this.useHandwriting ? '3px dashed rgba(52, 152, 219, 0.6)' : '4px solid #3498db'};
       padding-left: 20px;
       margin-left: 0;
       color: #555;
       font-style: italic;
+      ${this.useHandwriting ? `
+      opacity: 0.89;
+      background: rgba(250, 250, 250, 0.3);
+      padding: 12px 20px;
+      transform: rotate(-0.3deg);
+      position: relative;
+      ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Add quotation mark */
+    blockquote::before {
+      content: '"';
+      position: absolute;
+      left: 2px;
+      top: -5px;
+      font-size: 28px;
+      color: rgba(52, 152, 219, 0.3);
+      font-family: Georgia, serif;
+    }
+    ` : ''}
     ul, ol {
       padding-left: 30px;
+      ${this.useHandwriting ? 'position: relative;' : ''}
     }
     li {
       margin: 8px 0;
+      ${this.useHandwriting ? `
+      position: relative;
+      padding-left: 5px;
+      ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Hand-drawn bullet points with variations */
+    ul li::marker {
+      content: '◦';
+      color: rgba(70, 70, 70, 0.6);
+    }
+    ul li:nth-of-type(3n+1)::marker {
+      content: '•';
+      color: rgba(75, 75, 75, 0.55);
+    }
+    ul li:nth-of-type(3n+2)::marker {
+      content: '∘';
+      color: rgba(65, 65, 65, 0.65);
+    }
+    /* Random underlines for emphasis on multiple items */
+    li:nth-of-type(7)::after,
+    li:nth-of-type(11)::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 40%;
+      height: 1px;
+      background: rgba(80, 80, 80, 0.25);
+      transform: rotate(-0.8deg);
+    }
+    li:nth-of-type(11)::after {
+      width: 55%;
+      transform: rotate(0.6deg);
+      background: rgba(75, 75, 75, 0.22);
+    }
+    /* Margin doodles on various list items */
+    li:nth-of-type(4)::before {
+      content: '*';
+      position: absolute;
+      left: -20px;
+      color: rgba(85, 85, 85, 0.3);
+      font-size: 12px;
+      transform: rotate(-15deg);
+    }
+    li:nth-of-type(8)::before {
+      content: '✓';
+      position: absolute;
+      left: -22px;
+      color: rgba(90, 90, 90, 0.28);
+      font-size: 11px;
+      transform: rotate(8deg);
+    }
+    li:nth-of-type(12)::before {
+      content: '→';
+      position: absolute;
+      left: -25px;
+      color: rgba(80, 80, 80, 0.25);
+      font-size: 13px;
+    }
+    ` : ''}
     hr {
       border: none;
       border-top: 2px solid #ecf0f1;
