@@ -424,6 +424,62 @@ if (fontSearchInput && customFontSelect) {
   });
 }
 
+// Custom font upload handler
+const customFontUpload = document.getElementById('customFontUpload');
+
+if (customFontUpload) {
+  customFontUpload.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const fileSize = file.size / 1024 / 1024; // Convert to MB
+
+      if (fileSize > 10) {
+        alert('Font file is too large. Maximum size is 10MB.');
+        customFontUpload.value = '';
+        return;
+      }
+
+      const validExtensions = ['.ttf', '.otf', '.woff', '.woff2'];
+      const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+
+      if (!validExtensions.includes(fileExtension)) {
+        alert('Invalid font file type. Supported formats: TTF, OTF, WOFF, WOFF2');
+        customFontUpload.value = '';
+        return;
+      }
+
+      // Send to main process for uploading
+      ipcRenderer.send('upload-custom-font', file.path);
+      addDebugLog(`Uploading custom font: ${file.name}`);
+    }
+  });
+
+  // Listen for font upload success
+  ipcRenderer.on('font-upload-success', (event, { fontName, fontPath }) => {
+    addDebugLog(`Custom font uploaded successfully: ${fontName}`);
+    alert(`Font "${fontName}" uploaded successfully!`);
+
+    // Add to font select dropdown
+    if (customFontSelect) {
+      const option = document.createElement('option');
+      option.value = fontPath;
+      option.textContent = `Custom: ${fontName}`;
+      option.dataset.languages = 'latin'; // Default to latin
+      customFontSelect.appendChild(option);
+      customFontSelect.value = fontPath;
+    }
+
+    customFontUpload.value = '';
+  });
+
+  // Listen for font upload error
+  ipcRenderer.on('font-upload-error', (event, { error }) => {
+    addDebugLog(`Font upload error: ${error}`);
+    alert(`Failed to upload font: ${error}`);
+    customFontUpload.value = '';
+  });
+}
+
 // Tab switching
 tabBtns.forEach(btn => {
   btn.addEventListener('click', () => {

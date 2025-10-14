@@ -28,6 +28,39 @@ export class GeminiService {
   private sizeVariance: number;
   private enableMarginDoodles: boolean;
   private enableInkSpots: boolean;
+  // Advanced handwriting settings
+  private paperBackground: string;
+  private tableBackground: string;
+  private customFont: string;
+  private fontSizeAdvanced: number;
+  private lineHeight: number;
+  private letterSpacing: number;
+  private wordSpacing: number;
+  private enableBlur: boolean;
+  private enableShading: boolean;
+  private enablePaperShadow: boolean;
+  private enablePaperTexture: boolean;
+  private enableShadowSilhouette: boolean;
+  private enablePaperRotation: boolean;
+  private enableInkFlow: boolean;
+  private marginTop: number;
+  private marginRight: number;
+  private marginBottom: number;
+  private marginLeft: number;
+  private mirrorMargins: boolean;
+  private marginTopEven: number;
+  private marginRightEven: number;
+  private marginBottomEven: number;
+  private marginLeftEven: number;
+  private randomWordRotation: boolean;
+  private randomLetterRotation: boolean;
+  private randomIndentation: boolean;
+  private indentationRange: number;
+  private enableHyphenation: boolean;
+  private paragraphSpacing: number;
+  private outputFormat: string;
+  private outputQuality: string;
+  private pageSize: string;
 
   constructor(
     apiKey: string,
@@ -48,7 +81,40 @@ export class GeminiService {
     blurVariance: number = 15,
     sizeVariance: number = 3,
     enableMarginDoodles: boolean = true,
-    enableInkSpots: boolean = true
+    enableInkSpots: boolean = true,
+    // Advanced handwriting settings
+    paperBackground: string = 'plain-white',
+    tableBackground: string = 'none',
+    customFont: string = 'font1',
+    fontSizeAdvanced: number = 30,
+    lineHeight: number = 1.30,
+    letterSpacing: number = 0,
+    wordSpacing: number = 0,
+    enableBlur: boolean = false,
+    enableShading: boolean = false,
+    enablePaperShadow: boolean = false,
+    enablePaperTexture: boolean = true,
+    enableShadowSilhouette: boolean = false,
+    enablePaperRotation: boolean = false,
+    enableInkFlow: boolean = false,
+    marginTop: number = 20,
+    marginRight: number = 20,
+    marginBottom: number = 20,
+    marginLeft: number = 20,
+    mirrorMargins: boolean = false,
+    marginTopEven: number = 20,
+    marginRightEven: number = 20,
+    marginBottomEven: number = 20,
+    marginLeftEven: number = 20,
+    randomWordRotation: boolean = false,
+    randomLetterRotation: boolean = false,
+    randomIndentation: boolean = false,
+    indentationRange: number = 5,
+    enableHyphenation: boolean = false,
+    paragraphSpacing: number = 0,
+    outputFormat: string = 'pdf',
+    outputQuality: string = 'normal',
+    pageSize: string = 'a4'
   ) {
     this.apiKey = apiKey;
     this.modelName = modelName;
@@ -68,6 +134,39 @@ export class GeminiService {
     this.sizeVariance = sizeVariance;
     this.enableMarginDoodles = enableMarginDoodles;
     this.enableInkSpots = enableInkSpots;
+    // Advanced settings
+    this.paperBackground = paperBackground;
+    this.tableBackground = tableBackground;
+    this.customFont = customFont;
+    this.fontSizeAdvanced = fontSizeAdvanced;
+    this.lineHeight = lineHeight;
+    this.letterSpacing = letterSpacing;
+    this.wordSpacing = wordSpacing;
+    this.enableBlur = enableBlur;
+    this.enableShading = enableShading;
+    this.enablePaperShadow = enablePaperShadow;
+    this.enablePaperTexture = enablePaperTexture;
+    this.enableShadowSilhouette = enableShadowSilhouette;
+    this.enablePaperRotation = enablePaperRotation;
+    this.enableInkFlow = enableInkFlow;
+    this.marginTop = marginTop;
+    this.marginRight = marginRight;
+    this.marginBottom = marginBottom;
+    this.marginLeft = marginLeft;
+    this.mirrorMargins = mirrorMargins;
+    this.marginTopEven = marginTopEven;
+    this.marginRightEven = marginRightEven;
+    this.marginBottomEven = marginBottomEven;
+    this.marginLeftEven = marginLeftEven;
+    this.randomWordRotation = randomWordRotation;
+    this.randomLetterRotation = randomLetterRotation;
+    this.randomIndentation = randomIndentation;
+    this.indentationRange = indentationRange;
+    this.enableHyphenation = enableHyphenation;
+    this.paragraphSpacing = paragraphSpacing;
+    this.outputFormat = outputFormat;
+    this.outputQuality = outputQuality;
+    this.pageSize = pageSize;
     this.pathManager = new PathManager(customPath);
     this.preferencesFilePath = path.join(
       customPath || app.getPath('userData'),
@@ -643,11 +742,15 @@ Generated: ${new Date().toLocaleString()}
   }
 
   private getPaperBackground(): string {
-    if (!this.useHandwriting || this.paperStyle === 'clean-white') {
+    // Use paperBackground setting if provided, fallback to paperStyle for backward compatibility
+    const selectedPaper = this.paperBackground || this.paperStyle;
+
+    if (!this.useHandwriting || selectedPaper === 'clean-white' || selectedPaper === 'plain-white') {
       return 'background: white;';
     }
 
     const paperStyles: { [key: string]: string } = {
+      // Original styles for backward compatibility
       'aged-vintage': `
         background-color: #f8f6f0;
         background-image:
@@ -657,6 +760,174 @@ Generated: ${new Date().toLocaleString()}
           linear-gradient(180deg, rgba(255, 248, 220, 0.25) 0%, rgba(245, 230, 195, 0.2) 100%);
         box-shadow: inset 0 0 150px rgba(222, 184, 135, 0.18);
       `,
+      // New paper backgrounds
+      'plain-white': `background: white;`,
+      'wide-ruled-lined': `
+        background: linear-gradient(transparent 0%, transparent calc(100% - 1px), #d0d0f0 calc(100% - 1px)), #ffffff;
+        background-size: 100% 3em;
+      `,
+      'lined-with-margin': `
+        background:
+          linear-gradient(to right, transparent 60px, #ffd700 60px, #ffd700 62px, transparent 62px),
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #e0e0e0 calc(100% - 1px)), #ffffff;
+        background-size: 100% 100%, 100% 2em;
+      `,
+      'blank-spiral-notepad': `
+        background-color: #fffef7;
+        background-image:
+          repeating-linear-gradient(90deg, #d0d0d0 0px, #d0d0d0 2px, transparent 2px, transparent 30px);
+        background-position: 20px 0;
+        background-size: 30px 100%;
+      `,
+      'blank-spiral-sheet': `background-color: #faf8f5;`,
+      'lined-spiral': `
+        background:
+          repeating-linear-gradient(90deg, #c8c8c8 0px, #c8c8c8 2px, transparent 2px, transparent 30px),
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #b0b0ff calc(100% - 1px)), #ffffff;
+        background-position: 20px 0, 0 0;
+        background-size: 30px 100%, 100% 2em;
+      `,
+      // Enhanced Grid papers with more visible lines (like your handwritten sample)
+      'blue-grid': `
+        background-color: #f5f8fc;
+        background-image:
+          repeating-linear-gradient(0deg, #b0c4de 0px, #b0c4de 1.2px, transparent 1.2px, transparent 22px),
+          repeating-linear-gradient(90deg, #b0c4de 0px, #b0c4de 1.2px, transparent 1.2px, transparent 22px);
+      `,
+      'orange-grid': `
+        background-color: #fffaf5;
+        background-image:
+          repeating-linear-gradient(0deg, #ffb366 0px, #ffb366 1.2px, transparent 1.2px, transparent 22px),
+          repeating-linear-gradient(90deg, #ffb366 0px, #ffb366 1.2px, transparent 1.2px, transparent 22px);
+      `,
+      'graph-paper-blue': `
+        background-color: #f9fbfd;
+        background-image:
+          repeating-linear-gradient(0deg, #7fa8d1 0px, #7fa8d1 1.5px, transparent 1.5px, transparent 24px),
+          repeating-linear-gradient(90deg, #7fa8d1 0px, #7fa8d1 1.5px, transparent 1.5px, transparent 24px);
+      `,
+      'graph-paper-gray': `
+        background-color: #fafafa;
+        background-image:
+          repeating-linear-gradient(0deg, #a0a0a0 0px, #a0a0a0 1.5px, transparent 1.5px, transparent 24px),
+          repeating-linear-gradient(90deg, #a0a0a0 0px, #a0a0a0 1.5px, transparent 1.5px, transparent 24px);
+      `,
+      'engineering-paper': `
+        background-color: #f0f8f0;
+        background-image:
+          repeating-linear-gradient(0deg, #90c090 0px, #90c090 1.2px, transparent 1.2px, transparent 20px),
+          repeating-linear-gradient(90deg, #90c090 0px, #90c090 1.2px, transparent 1.2px, transparent 20px);
+      `,
+      'dotted-grid': `
+        background-color: #ffffff;
+        background-image: radial-gradient(circle, #888888 1.5px, transparent 1.5px);
+        background-size: 22px 22px;
+      `,
+      'white-grid': `
+        background-color: #fafafa;
+        background-image:
+          repeating-linear-gradient(0deg, #c8c8c8 0px, #c8c8c8 1.2px, transparent 1.2px, transparent 22px),
+          repeating-linear-gradient(90deg, #c8c8c8 0px, #c8c8c8 1.2px, transparent 1.2px, transparent 22px);
+      `,
+      'light-gray-graph': `
+        background-color: #f9f9f9;
+        background-image:
+          repeating-linear-gradient(0deg, #d0d0d0 0px, #d0d0d0 1.2px, transparent 1.2px, transparent 22px),
+          repeating-linear-gradient(90deg, #d0d0d0 0px, #d0d0d0 1.2px, transparent 1.2px, transparent 22px);
+      `,
+      'square-grid': `
+        background-color: #ffffff;
+        background-image:
+          repeating-linear-gradient(0deg, #b0b0b0 0px, #b0b0b0 1.8px, transparent 1.8px, transparent 26px),
+          repeating-linear-gradient(90deg, #b0b0b0 0px, #b0b0b0 1.8px, transparent 1.8px, transparent 26px);
+      `,
+      'classic-grid': `
+        background-color: #fefefe;
+        background-image:
+          repeating-linear-gradient(0deg, #c0c0c0 0px, #c0c0c0 1.2px, transparent 1.2px, transparent 22px),
+          repeating-linear-gradient(90deg, #c0c0c0 0px, #c0c0c0 1.2px, transparent 1.2px, transparent 22px);
+      `,
+      // Notebook papers
+      'realistic-spiral': `
+        background-color: #fffef7;
+        background-image:
+          repeating-linear-gradient(90deg, #b8b8b8 0px, #b8b8b8 3px, transparent 3px, transparent 35px);
+        background-position: 15px 0;
+        background-size: 35px 100%;
+      `,
+      'light-blue-ruled': `
+        background:
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #a8d1ff calc(100% - 1px)), #ffffff;
+        background-size: 100% 2em;
+      `,
+      'blue-lines-spiral': `
+        background:
+          repeating-linear-gradient(90deg, #afafaf 0px, #afafaf 2px, transparent 2px, transparent 30px),
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #8ec5fc calc(100% - 1px)), #ffffff;
+        background-position: 18px 0, 0 0;
+        background-size: 30px 100%, 100% 2.2em;
+      `,
+      'grey-lined-sheet': `
+        background:
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #cccccc calc(100% - 1px)), #f8f8f8;
+        background-size: 100% 2.5em;
+      `,
+      'lined-classic': `
+        background:
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #e0e0e0 calc(100% - 1px)), #ffffff;
+        background-size: 100% 2em;
+      `,
+      'lined-red-margin': `
+        background:
+          linear-gradient(to right, transparent 65px, #ff6b6b 65px, #ff6b6b 67px, transparent 67px),
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #d0d0d0 calc(100% - 1px)), #ffffff;
+        background-size: 100% 100%, 100% 2.2em;
+      `,
+      'lined-fine': `
+        background:
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #e8e8e8 calc(100% - 1px)), #ffffff;
+        background-size: 100% 1.5em;
+      `,
+      'detailed-notebook': `
+        background-color: #fffef8;
+        background-image:
+          linear-gradient(to right, transparent 70px, #ffb347 70px, #ffb347 72px, transparent 72px),
+          repeating-linear-gradient(0deg, transparent, transparent calc(2em - 1px), #d8d8d8 calc(2em - 1px));
+        background-size: 100% 100%, 100% 2em;
+      `,
+      'school-ruler': `
+        background:
+          linear-gradient(to right, transparent 60px, #4a90e2 60px, #4a90e2 62px, transparent 62px),
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #b0b0b0 calc(100% - 1px)), #fefefe;
+        background-size: 100% 100%, 100% 2em;
+      `,
+      'simple-lined': `
+        background:
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #d5d5d5 calc(100% - 1px)), #ffffff;
+        background-size: 100% 2em;
+      `,
+      'spiral-red-margin': `
+        background:
+          repeating-linear-gradient(90deg, #a8a8a8 0px, #a8a8a8 2.5px, transparent 2.5px, transparent 32px),
+          linear-gradient(to right, transparent 68px, #ff5757 68px, #ff5757 70px, transparent 70px),
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #c8c8c8 calc(100% - 1px)), #ffffff;
+        background-position: 18px 0, 0 0, 0 0;
+        background-size: 32px 100%, 100% 100%, 100% 2.2em;
+      `,
+      'realistic-lined': `
+        background:
+          linear-gradient(to right, transparent 55px, rgba(255, 107, 107, 0.4) 55px, rgba(255, 107, 107, 0.4) 57px, transparent 57px),
+          linear-gradient(transparent 0%, transparent calc(100% - 1px), #dadada calc(100% - 1px)), #fffef9;
+        background-size: 100% 100%, 100% 2em;
+      `,
+      'plain-white-notepad': `background-color: #ffffff;`,
+      'notepad-orange-edge': `
+        background:
+          linear-gradient(to left, #ffb84d 0%, #ffb84d 8px, transparent 8px),
+          #ffffff;
+        background-size: 100% 100%;
+      `,
+      'mirror-even-pages': `background-color: #f9f9f9;`,
       'cream-white': `background-color: #fffef7; background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,.005) 1px, rgba(0,0,0,.005) 2px);`,
       'off-white': `background-color: #fafaf8;`,
       'recycled': `background-color: #f5f5dc; background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.01) 10px, rgba(0,0,0,.01) 11px);`,
@@ -688,7 +959,43 @@ Generated: ${new Date().toLocaleString()}
       'light-gray': `background-color: #f5f5f5;`
     };
 
-    return paperStyles[this.paperStyle] || paperStyles['aged-vintage'];
+    return paperStyles[selectedPaper] || paperStyles['plain-white'];
+  }
+
+  private getTableBackground(): string {
+    if (this.tableBackground === 'none') {
+      return '';
+    }
+
+    const tableStyles: { [key: string]: string } = {
+      'dark-charcoal': `background-color: #2c3e50; background-image: linear-gradient(135deg, #34495e 25%, #2c3e50 25%, #2c3e50 50%, #34495e 50%, #34495e 75%, #2c3e50 75%); background-size: 40px 40px;`,
+      'golden-oak': `background-color: #c19a6b; background-image: linear-gradient(90deg, rgba(139,69,19,0.1) 1px, transparent 1px), linear-gradient(rgba(139,69,19,0.1) 1px, transparent 1px); background-size: 50px 50px;`,
+      'rustic-walnut': `background-color: #5c4033; background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.2) 0px, transparent 2px, transparent 50px, rgba(0,0,0,0.2) 52px);`,
+      'classic-mahogany': `background-color: #6b3410; background-image: linear-gradient(90deg, rgba(139,69,19,0.3) 10%, transparent 10%, transparent 90%, rgba(139,69,19,0.3) 90%); background-size: 100px 100%;`,
+      'grey-weathered': `background-color: #808080; background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 2px, transparent 2px, transparent 8px);`,
+      'midnight-blue': `background-color: #191970; background-image: linear-gradient(135deg, #000080 25%, #191970 25%, #191970 50%, #000080 50%, #000080 75%, #191970 75%); background-size: 60px 60px;`,
+      'bright-maple': `background-color: #daa520; background-image: repeating-linear-gradient(90deg, rgba(205,133,63,0.2) 0px, transparent 2px, transparent 40px);`,
+      'desert-oak': `background-color: #c2b280; background-image: linear-gradient(rgba(101,67,33,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(101,67,33,0.1) 1px, transparent 1px); background-size: 80px 80px;`,
+      'steel-ash': `background-color: #708090; background-image: linear-gradient(135deg, rgba(47,79,79,0.3) 25%, transparent 25%);`,
+      'amber-vintage': `background-color: #ffbf00; background-image: radial-gradient(circle at 20% 50%, rgba(255,140,0,0.3) 0%, transparent 50%);`,
+      'slate-grey': `background-color: #708090; background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 10px);`,
+      'rich-cedar': `background-color: #964b00; background-image: linear-gradient(90deg, rgba(139,69,19,0.4) 5%, transparent 5%, transparent 95%, rgba(139,69,19,0.4) 95%);`,
+      'pristine-white': `background-color: #ffffff;`,
+      'pale-ash': `background-color: #c0c0c0;`,
+      'warm-walnut': `background-color: #773f1a; background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.15) 0px, transparent 3px, transparent 45px);`,
+      'white-pine': `background-color: #f5deb3; background-image: linear-gradient(rgba(210,180,140,0.15) 2px, transparent 2px); background-size: 100% 50px;`,
+      'blonde-oak': `background-color: #f5f5dc; background-image: repeating-linear-gradient(90deg, rgba(205,133,63,0.1) 0px, transparent 2px, transparent 60px);`,
+      'walnut': `background-color: #654321;`,
+      'espresso-ash': `background-color: #3b2f2f; background-image: linear-gradient(135deg, rgba(0,0,0,0.2) 25%, transparent 25%);`,
+      'grey-oak': `background-color: #a9a9a9; background-image: repeating-linear-gradient(90deg, rgba(128,128,128,0.2) 0px, transparent 2px, transparent 50px);`,
+      'honey-maple': `background-color: #f0e68c; background-image: linear-gradient(90deg, rgba(255,215,0,0.2) 1px, transparent 1px); background-size: 40px 100%;`,
+      'light-bamboo': `background-color: #e8dcc4; background-image: repeating-linear-gradient(90deg, rgba(139,119,101,0.2) 0px, rgba(139,119,101,0.2) 2px, transparent 2px, transparent 30px);`,
+      'silver-driftwood': `background-color: #bdbdbd; background-image: linear-gradient(rgba(169,169,169,0.2) 1px, transparent 1px); background-size: 100% 60px;`,
+      'rich-cherry': `background-color: #990000; background-image: radial-gradient(circle at 30% 40%, rgba(139,0,0,0.3) 0%, transparent 50%);`,
+      'modern-dark-wood': `background-color: #36221f; background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 10px);`
+    };
+
+    return tableStyles[this.tableBackground] || '';
   }
 
   private async convertMarkdownToPdf(markdownContent: string, pdfPath: string): Promise<void> {
@@ -764,8 +1071,19 @@ Generated: ${new Date().toLocaleString()}
       ? `https://fonts.googleapis.com/css2?family=${this.handwritingFont.replace(/ /g, '+')}:wght@400;700&display=swap`
       : '';
 
-    // Get paper background from user settings
+    // Get paper and table background from user settings
     const paperBackground = this.getPaperBackground();
+    const tableBackground = this.getTableBackground();
+
+    // Determine which font size to use (fontSizeAdvanced if set, otherwise fontSize)
+    const actualFontSize = this.fontSizeAdvanced > 0 ? this.fontSizeAdvanced : this.fontSize;
+
+    // Determine line height (use advanced setting if available)
+    const actualLineHeight = this.lineHeight || (this.useHandwriting ? 2.2 : 1.6);
+
+    // Apply letter and word spacing from advanced settings
+    const actualLetterSpacing = this.letterSpacing || 0;
+    const actualWordSpacing = this.wordSpacing || 0;
 
     // Convert hex color to RGB for opacity variations
     const hexToRgb = (hex: string): { r: number, g: number, b: number } => {
@@ -780,6 +1098,38 @@ Generated: ${new Date().toLocaleString()}
     const rgb = hexToRgb(this.handwritingColor);
     const baseColor = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
 
+    // Natural pen color presets for more realistic handwriting
+    const penColorPresets = {
+      'blue-pen': '#1a4d7d',      // Classic blue ballpoint
+      'black-pen': '#2d2d2d',     // Soft black
+      'dark-blue': '#0d3b66',     // Dark blue ink
+      'navy-pen': '#1e3a5f',      // Navy blue
+      'gray-pencil': '#5a5a5a',   // Graphite pencil
+      'light-blue': '#3a6ea5',    // Light blue pen
+      'purple-pen': '#5b3a70',    // Purple ink
+      'brown-pen': '#6b4423'      // Brown/sepia ink
+    };
+
+    // Detect if using grid paper for enhanced grid alignment
+    const selectedPaper = this.paperBackground || this.paperStyle;
+    const isGridPaper = selectedPaper.includes('grid') ||
+                        selectedPaper.includes('graph') ||
+                        selectedPaper.includes('engineering');
+
+    // Grid-aware line height (override with user setting if provided)
+    const gridAwareLineHeight = actualLineHeight;
+
+    // Apply effects CSS classes
+    const paperShadowCSS = this.enablePaperShadow ? 'box-shadow: 0 4px 8px rgba(0,0,0,0.1), 0 6px 20px rgba(0,0,0,0.08);' : '';
+    const paperRotationCSS = this.enablePaperRotation ? 'transform: rotate(-0.5deg);' : '';
+    const blurEffectValue = this.enableBlur ? '0.3px' : '0px';
+    const shadingEffect = this.enableShading ? 'filter: brightness(0.98) contrast(1.02);' : '';
+    const textureOpacity = this.enablePaperTexture ? '0.05' : '0';
+    const silhouetteEffect = this.enableShadowSilhouette ? 'text-shadow: 1px 1px 2px rgba(0,0,0,0.15);' : '';
+
+    // Paragraph spacing
+    const paragraphSpacingCSS = this.paragraphSpacing > 0 ? `margin-bottom: ${this.paragraphSpacing}px;` : '';
+
     // Create HTML with KaTeX CSS and proper styling
     const fullHtml = `
 <!DOCTYPE html>
@@ -789,16 +1139,35 @@ Generated: ${new Date().toLocaleString()}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   ${googleFontsUrl ? `<link rel="stylesheet" href="${googleFontsUrl}">` : ''}
   <style>
+    ${tableBackground ? `
+    html {
+      ${tableBackground}
+      padding: 40px;
+      min-height: 100vh;
+    }
+    ` : ''}
     body {
       font-family: ${fontFamily};
-      line-height: ${this.useHandwriting ? '2.2' : '1.6'};
+      line-height: ${gridAwareLineHeight};
       color: ${this.useHandwriting ? this.handwritingColor : '#333'};
+      font-size: ${actualFontSize}px;
       max-width: 800px;
-      margin: 40px auto;
+      margin: ${this.marginTop}px ${this.marginRight}px ${this.marginBottom}px ${this.marginLeft}px;
       padding: 20px;
       ${paperBackground}
       font-weight: ${this.useHandwriting ? '400' : 'normal'};
       position: relative;
+      ${paperShadowCSS}
+      ${paperRotationCSS}
+      ${shadingEffect}
+      letter-spacing: ${actualLetterSpacing}px;
+      word-spacing: ${actualWordSpacing}px;
+      ${tableBackground ? 'background-color: white;' : ''}
+      ${isGridPaper && this.useHandwriting ? `
+      /* Enhanced grid alignment for graph paper */
+      background-attachment: local;
+      background-position: 0 calc(40px + ${this.baselineVariance}px);
+      ` : ''}
     }
     ${this.useHandwriting ? `
     /* Faded ink bleed effect with more variation */
@@ -928,19 +1297,48 @@ Generated: ${new Date().toLocaleString()}
     }
     ` : ''}
     p, li {
-      font-size: ${this.useHandwriting ? `${this.fontSize}px` : '16px'};
+      font-size: ${this.useHandwriting ? `${actualFontSize}px` : '16px'};
+      ${paragraphSpacingCSS}
       ${this.useHandwriting ? `
       opacity: 0.91;
       color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.93);
-      text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.03);
-      letter-spacing: 0.005em;
-      word-spacing: 0.08em;
-      filter: contrast(0.95);
+      ${silhouetteEffect}
+      letter-spacing: ${actualLetterSpacing}px;
+      word-spacing: ${actualWordSpacing}px;
+      filter: contrast(0.95) ${this.enableBlur ? `blur(${blurEffectValue})` : ''};
       position: relative;
-      /* Simulate pencil pressure variations through subtle spacing */
-      line-height: 2.25;
+      line-height: ${actualLineHeight};
+      ${this.randomIndentation ? `text-indent: calc(var(--indent, 0) * ${this.indentationRange}px);` : ''}
+      ${this.enableInkFlow ? `
+      /* Ink flow variation */
+      opacity: calc(0.88 + var(--ink-flow, 0) * 0.12);
+      filter: contrast(calc(0.93 + var(--ink-flow, 0) * 0.08));
+      ` : ''}
       ` : ''}
     }
+    ${this.useHandwriting && this.randomWordRotation ? `
+    /* Word-level rotation for natural handwriting */
+    p, li {
+      word-spacing: calc(${actualWordSpacing}px + var(--word-space, 0) * 2px);
+    }
+    ` : ''}
+    ${this.useHandwriting && this.randomLetterRotation ? `
+    /* Character-level rotation and variation for natural handwriting */
+    p span, li span {
+      display: inline-block;
+      transform: rotate(calc(var(--char-rot, 0) * ${this.rotationVariance}deg));
+      position: relative;
+      top: calc(var(--char-base, 0) * ${this.baselineVariance}px);
+    }
+    ` : ''}
+    ${this.enableHyphenation ? `
+    /* Enable hyphenation */
+    p, li {
+      hyphens: auto;
+      -webkit-hyphens: auto;
+      -ms-hyphens: auto;
+    }
+    ` : ''}
     ${this.useHandwriting ? `
     /* Add ink bleed effect to certain words */
     strong, b {
@@ -1324,12 +1722,31 @@ Generated: ${new Date().toLocaleString()}
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
+    // Map page size setting to Electron format
+    const pageSizeMap: { [key: string]: string } = {
+      'a4': 'A4',
+      'letter': 'Letter',
+      'legal': 'Legal',
+      'a5': 'A5'
+    };
+
+    // Map output quality to scale factor
+    const qualityScaleMap: { [key: string]: number } = {
+      'draft': 0.7,
+      'normal': 1.0,
+      'high': 1.3,
+      'print': 1.5
+    };
+
+    const scale = qualityScaleMap[this.outputQuality] || 1.0;
+
     // Generate PDF
     const pdfData = await win.webContents.printToPDF({
       printBackground: true,
       marginsType: 0,
-      pageSize: 'A4',
-      landscape: false
+      pageSize: pageSizeMap[this.pageSize] || 'A4',
+      landscape: false,
+      scale: scale
     });
 
     // Save PDF

@@ -190,7 +190,40 @@ function setupIPC() {
         config.blurVariance !== undefined ? config.blurVariance : 15,
         config.sizeVariance !== undefined ? config.sizeVariance : 3,
         config.enableMarginDoodles !== false,
-        config.enableInkSpots !== false
+        config.enableInkSpots !== false,
+        // Advanced handwriting settings
+        config.paperBackground || 'plain-white',
+        config.tableBackground || 'none',
+        config.customFont || 'font1',
+        config.fontSizeAdvanced || 30,
+        config.lineHeight || 1.30,
+        config.letterSpacing || 0,
+        config.wordSpacing || 0,
+        config.enableBlur || false,
+        config.enableShading || false,
+        config.enablePaperShadow || false,
+        config.enablePaperTexture !== false,
+        config.enableShadowSilhouette || false,
+        config.enablePaperRotation || false,
+        config.enableInkFlow || false,
+        config.marginTop || 20,
+        config.marginRight || 20,
+        config.marginBottom || 20,
+        config.marginLeft || 20,
+        config.mirrorMargins || false,
+        config.marginTopEven || 20,
+        config.marginRightEven || 20,
+        config.marginBottomEven || 20,
+        config.marginLeftEven || 20,
+        config.randomWordRotation || false,
+        config.randomLetterRotation || false,
+        config.randomIndentation || false,
+        config.indentationRange || 5,
+        config.enableHyphenation || false,
+        config.paragraphSpacing || 0,
+        config.outputFormat || 'pdf',
+        config.outputQuality || 'normal',
+        config.pageSize || 'a4'
       );
       const summary = await gemini.generateSummary(assignment);
       event.reply('summary-result', {
@@ -341,7 +374,40 @@ function setupIPC() {
         config.blurVariance !== undefined ? config.blurVariance : 15,
         config.sizeVariance !== undefined ? config.sizeVariance : 3,
         config.enableMarginDoodles !== false,
-        config.enableInkSpots !== false
+        config.enableInkSpots !== false,
+        // Advanced handwriting settings
+        config.paperBackground || 'plain-white',
+        config.tableBackground || 'none',
+        config.customFont || 'font1',
+        config.fontSizeAdvanced || 30,
+        config.lineHeight || 1.30,
+        config.letterSpacing || 0,
+        config.wordSpacing || 0,
+        config.enableBlur || false,
+        config.enableShading || false,
+        config.enablePaperShadow || false,
+        config.enablePaperTexture !== false,
+        config.enableShadowSilhouette || false,
+        config.enablePaperRotation || false,
+        config.enableInkFlow || false,
+        config.marginTop || 20,
+        config.marginRight || 20,
+        config.marginBottom || 20,
+        config.marginLeft || 20,
+        config.mirrorMargins || false,
+        config.marginTopEven || 20,
+        config.marginRightEven || 20,
+        config.marginBottomEven || 20,
+        config.marginLeftEven || 20,
+        config.randomWordRotation || false,
+        config.randomLetterRotation || false,
+        config.randomIndentation || false,
+        config.indentationRange || 5,
+        config.enableHyphenation || false,
+        config.paragraphSpacing || 0,
+        config.outputFormat || 'pdf',
+        config.outputQuality || 'normal',
+        config.pageSize || 'a4'
       );
 
       const solution = await gemini.solveAssignment(assignment, downloadedFiles, pdfImages, docxTexts);
@@ -486,7 +552,60 @@ function setupIPC() {
         return;
       }
 
-      const gemini = new GeminiService(apiKey, undefined, undefined, '', ['name', 'id'], false, 'Homemade Apple', '#2d2d2d', 18, 'aged-vintage', 0.5, 5, 10, 0.8, 25, 15, 3, true, true);
+      const gemini = new GeminiService(
+        apiKey,
+        undefined,
+        undefined,
+        '',
+        ['name', 'id'],
+        false,
+        'Homemade Apple',
+        '#2d2d2d',
+        18,
+        'aged-vintage',
+        0.5,
+        5,
+        10,
+        0.8,
+        25,
+        15,
+        3,
+        true,
+        true,
+        // Advanced settings (all defaults)
+        'plain-white',
+        'none',
+        'font1',
+        30,
+        1.30,
+        0,
+        0,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        20,
+        20,
+        20,
+        20,
+        false,
+        20,
+        20,
+        20,
+        20,
+        false,
+        false,
+        false,
+        5,
+        false,
+        0,
+        'pdf',
+        'normal',
+        'a4'
+      );
       const models = await gemini.listAvailableModels();
       event.reply('gemini-models-result', models);
     } catch (error: any) {
@@ -542,6 +661,37 @@ function setupIPC() {
     } catch (error: any) {
       console.error('Error selecting file:', error);
       event.reply('submission-file-selected', { filePath: null });
+    }
+  });
+
+  // Custom font upload handler
+  ipcMain.on('upload-custom-font', async (event, fontPath) => {
+    try {
+      const fs = require('fs');
+      const config = settingsManager?.getSettings();
+      const customFontsDir = path.join(config?.downloadPath || app.getPath('userData'), 'custom-fonts');
+
+      // Create custom fonts directory if it doesn't exist
+      if (!fs.existsSync(customFontsDir)) {
+        fs.mkdirSync(customFontsDir, { recursive: true });
+      }
+
+      // Get font filename
+      const fontFileName = path.basename(fontPath);
+      const destPath = path.join(customFontsDir, fontFileName);
+
+      // Copy font file to custom fonts directory
+      fs.copyFileSync(fontPath, destPath);
+
+      event.reply('font-upload-success', {
+        fontName: fontFileName,
+        fontPath: destPath
+      });
+    } catch (error: any) {
+      console.error('Error uploading custom font:', error);
+      event.reply('font-upload-error', {
+        error: error.message || 'Failed to upload font'
+      });
     }
   });
 
