@@ -941,85 +941,109 @@ Generated: ${new Date().toLocaleString()}
     }
     ` : ''}
     ${this.useHandwriting ? `
-    /* Uneven text with more variation */
+    /* Uneven text with more variation - using user's rotation variance */
     p:nth-child(4n+1) {
-      transform: rotate(0.15deg);
-      opacity: 0.89;
+      transform: rotate(${this.rotationVariance * 0.3}deg) translateY(${this.baselineVariance * 0.5}px);
+      opacity: ${Math.max(0.85, 1 - (this.inkDensityVariance / 400))};
+      letter-spacing: ${this.spacingVariance * 0.01}em;
+      word-spacing: ${this.wordSpacingVariance * 0.01}em;
+      ${this.blurVariance > 0 ? `filter: blur(${this.blurVariance * 0.003}px) contrast(${1 - this.blurVariance * 0.001});` : ''}
     }
     p:nth-child(4n+2) {
-      transform: rotate(-0.2deg);
-      opacity: 0.92;
+      transform: rotate(-${this.rotationVariance * 0.4}deg) translateY(-${this.baselineVariance * 0.4}px);
+      opacity: ${Math.max(0.88, 1 - (this.inkDensityVariance / 500))};
+      letter-spacing: ${this.spacingVariance * 0.012}em;
+      word-spacing: ${this.wordSpacingVariance * 0.008}em;
+      font-size: ${this.fontSize * (1 - this.sizeVariance * 0.005)}px;
     }
     p:nth-child(4n+3) {
-      transform: rotate(0.08deg);
-      opacity: 0.90;
+      transform: rotate(${this.rotationVariance * 0.16}deg) translateY(${this.baselineVariance * 0.3}px);
+      opacity: ${Math.max(0.86, 1 - (this.inkDensityVariance / 450))};
+      letter-spacing: ${this.spacingVariance * 0.008}em;
+      word-spacing: ${this.wordSpacingVariance * 0.012}em;
+      font-size: ${this.fontSize * (1 + this.sizeVariance * 0.003)}px;
     }
     p:nth-child(4n) {
-      transform: rotate(-0.12deg);
-      opacity: 0.93;
+      transform: rotate(-${this.rotationVariance * 0.24}deg) translateY(-${this.baselineVariance * 0.6}px);
+      opacity: ${Math.max(0.89, 1 - (this.inkDensityVariance / 480))};
+      letter-spacing: ${this.spacingVariance * 0.01}em;
+      word-spacing: ${this.wordSpacingVariance * 0.01}em;
+      ${this.blurVariance > 10 ? `filter: contrast(${1 - this.blurVariance * 0.0015});` : ''}
     }
-    /* Faded and smudged text for lists */
+    /* Faded and smudged text for lists - using user's variance */
     li:nth-child(3n+1) {
-      opacity: 0.87;
-      filter: blur(0.15px);
+      opacity: ${Math.max(0.82, 1 - (this.inkDensityVariance / 350))};
+      ${this.blurVariance > 5 ? `filter: blur(${this.blurVariance * 0.003}px);` : ''}
+      transform: rotate(${this.rotationVariance * 0.2}deg) translateY(${this.baselineVariance * 0.4}px);
+      letter-spacing: ${this.spacingVariance * 0.009}em;
+      font-size: ${this.fontSize * (1 - this.sizeVariance * 0.004)}px;
     }
     li:nth-child(3n+2) {
-      opacity: 0.91;
+      opacity: ${Math.max(0.87, 1 - (this.inkDensityVariance / 450))};
+      transform: rotate(-${this.rotationVariance * 0.15}deg) translateY(-${this.baselineVariance * 0.3}px);
+      letter-spacing: ${this.spacingVariance * 0.011}em;
     }
     li:nth-child(3n) {
-      opacity: 0.89;
-      filter: contrast(0.93);
+      opacity: ${Math.max(0.84, 1 - (this.inkDensityVariance / 400))};
+      ${this.blurVariance > 0 ? `filter: contrast(${1 - this.blurVariance * 0.002});` : ''}
+      transform: rotate(${this.rotationVariance * 0.18}deg);
+      font-size: ${this.fontSize * (1 + this.sizeVariance * 0.002)}px;
     }
+    ${this.enableMarginDoodles ? `
     /* Random pencil marks and margin annotations on paragraphs */
     p:nth-of-type(5)::before {
       content: '✓';
       position: absolute;
       left: -20px;
-      color: rgba(90, 90, 90, 0.25);
+      color: rgba(90, 90, 90, ${0.15 + this.inkDensityVariance * 0.001});
       font-size: 14px;
-      transform: rotate(-8deg);
+      transform: rotate(-${8 + this.rotationVariance * 2}deg);
     }
     p:nth-of-type(9)::before {
       content: '!';
       position: absolute;
       left: -18px;
-      color: rgba(85, 85, 85, 0.28);
+      color: rgba(85, 85, 85, ${0.18 + this.inkDensityVariance * 0.0012});
       font-size: 13px;
-      transform: rotate(5deg);
+      transform: rotate(${5 + this.rotationVariance * 1.5}deg);
     }
     p:nth-of-type(13)::before {
       content: '★';
       position: absolute;
       left: -22px;
-      color: rgba(95, 95, 95, 0.22);
+      color: rgba(95, 95, 95, ${0.12 + this.inkDensityVariance * 0.0015});
       font-size: 12px;
-      transform: rotate(-12deg);
+      transform: rotate(-${12 + this.rotationVariance * 3}deg);
     }
-    /* Pencil pressure effects - darker/lighter text */
+    ` : ''}
+    /* Pencil pressure effects - darker/lighter text based on ink density variance */
     p:nth-of-type(6n+1) {
-      color: rgba(50, 50, 50, 0.95);
-      filter: contrast(1.02);
+      color: rgba(50, 50, 50, ${0.85 + this.inkDensityVariance * 0.0012});
+      filter: contrast(${1 + this.inkDensityVariance * 0.0002});
     }
     p:nth-of-type(6n+3) {
-      color: rgba(65, 65, 65, 0.86);
-      filter: contrast(0.94) brightness(1.03);
+      color: rgba(65, 65, 65, ${0.76 + this.inkDensityVariance * 0.0015});
+      filter: contrast(${0.94 - this.blurVariance * 0.0003}) brightness(${1 + this.inkDensityVariance * 0.0004});
     }
     p:nth-of-type(6n+5) {
-      color: rgba(58, 58, 58, 0.90);
-      filter: contrast(0.97) blur(0.18px);
+      color: rgba(58, 58, 58, ${0.80 + this.inkDensityVariance * 0.0013});
+      filter: contrast(${0.97 - this.blurVariance * 0.0002}) ${this.blurVariance > 10 ? `blur(${this.blurVariance * 0.004}px)` : ''};
     }
+    ${this.enableInkSpots ? `
     /* Random ink spots and bleed on specific elements */
     p:nth-of-type(7)::after {
       content: '';
       position: absolute;
       top: 8px;
       right: -15px;
-      width: 3px;
-      height: 3px;
+      width: ${2 + this.blurVariance * 0.05}px;
+      height: ${2 + this.blurVariance * 0.05}px;
       border-radius: 50%;
-      background: rgba(80, 80, 80, 0.15);
-      box-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+      background: rgba(80, 80, 80, ${0.1 + this.inkDensityVariance * 0.001});
+      box-shadow: 1px 1px 2px rgba(0,0,0,${0.03 + this.blurVariance * 0.0005});
+      ${this.blurVariance > 15 ? `filter: blur(${this.blurVariance * 0.02}px);` : ''}
     }
+    ` : ''}
     ` : ''}
     .math-display {
       margin: 20px 0;
@@ -1206,30 +1230,33 @@ Generated: ${new Date().toLocaleString()}
       transform: rotate(0.6deg);
       background: rgba(75, 75, 75, 0.22);
     }
+    ${this.enableMarginDoodles ? `
     /* Margin doodles on various list items */
     li:nth-of-type(4)::before {
       content: '*';
       position: absolute;
       left: -20px;
-      color: rgba(85, 85, 85, 0.3);
-      font-size: 12px;
-      transform: rotate(-15deg);
+      color: rgba(85, 85, 85, ${0.2 + this.inkDensityVariance * 0.0012});
+      font-size: ${11 + this.sizeVariance * 0.3}px;
+      transform: rotate(-${15 + this.rotationVariance * 4}deg);
     }
     li:nth-of-type(8)::before {
       content: '✓';
       position: absolute;
       left: -22px;
-      color: rgba(90, 90, 90, 0.28);
-      font-size: 11px;
-      transform: rotate(8deg);
+      color: rgba(90, 90, 90, ${0.18 + this.inkDensityVariance * 0.0013});
+      font-size: ${10 + this.sizeVariance * 0.25}px;
+      transform: rotate(${8 + this.rotationVariance * 2.5}deg);
     }
     li:nth-of-type(12)::before {
       content: '→';
       position: absolute;
       left: -25px;
-      color: rgba(80, 80, 80, 0.25);
-      font-size: 13px;
+      color: rgba(80, 80, 80, ${0.15 + this.inkDensityVariance * 0.0015});
+      font-size: ${12 + this.sizeVariance * 0.3}px;
+      transform: rotate(${this.rotationVariance * 3}deg);
     }
+    ` : ''}
     ` : ''}
     hr {
       border: none;

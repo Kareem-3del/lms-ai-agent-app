@@ -177,11 +177,20 @@ function setupIPC() {
         config.downloadPath,
         config.extraRules || '',
         config.pdfHeaderFields || ['name', 'id'],
-        config.useHandwriting || false,
+        config.useHandwriting !== false,
         config.handwritingFont || 'Homemade Apple',
         config.handwritingColor || '#2d2d2d',
         config.fontSize || 18,
-        config.paperStyle || 'aged-vintage'
+        config.paperStyle || 'aged-vintage',
+        config.rotationVariance !== undefined ? config.rotationVariance : 0.5,
+        config.spacingVariance !== undefined ? config.spacingVariance : 5,
+        config.wordSpacingVariance !== undefined ? config.wordSpacingVariance : 10,
+        config.baselineVariance !== undefined ? config.baselineVariance : 0.8,
+        config.inkDensityVariance !== undefined ? config.inkDensityVariance : 25,
+        config.blurVariance !== undefined ? config.blurVariance : 15,
+        config.sizeVariance !== undefined ? config.sizeVariance : 3,
+        config.enableMarginDoodles !== false,
+        config.enableInkSpots !== false
       );
       const summary = await gemini.generateSummary(assignment);
       event.reply('summary-result', {
@@ -275,11 +284,20 @@ function setupIPC() {
         config.downloadPath,
         config.extraRules || '',
         config.pdfHeaderFields || ['name', 'id'],
-        config.useHandwriting || false,
+        config.useHandwriting !== false,
         config.handwritingFont || 'Homemade Apple',
         config.handwritingColor || '#2d2d2d',
         config.fontSize || 18,
-        config.paperStyle || 'aged-vintage'
+        config.paperStyle || 'aged-vintage',
+        config.rotationVariance !== undefined ? config.rotationVariance : 0.5,
+        config.spacingVariance !== undefined ? config.spacingVariance : 5,
+        config.wordSpacingVariance !== undefined ? config.wordSpacingVariance : 10,
+        config.baselineVariance !== undefined ? config.baselineVariance : 0.8,
+        config.inkDensityVariance !== undefined ? config.inkDensityVariance : 25,
+        config.blurVariance !== undefined ? config.blurVariance : 15,
+        config.sizeVariance !== undefined ? config.sizeVariance : 3,
+        config.enableMarginDoodles !== false,
+        config.enableInkSpots !== false
       );
       const solution = await gemini.solveAssignment(assignment, downloadedFiles, pdfImages, docxTexts);
       const filePath = await gemini.saveSolution(assignment, solution);
@@ -382,7 +400,7 @@ function setupIPC() {
         return;
       }
 
-      const gemini = new GeminiService(apiKey, undefined, undefined, '', ['name', 'id'], false, 'Homemade Apple', '#2d2d2d', 18, 'aged-vintage');
+      const gemini = new GeminiService(apiKey, undefined, undefined, '', ['name', 'id'], false, 'Homemade Apple', '#2d2d2d', 18, 'aged-vintage', 0.5, 5, 10, 0.8, 25, 15, 3, true, true);
       const models = await gemini.listAvailableModels();
       event.reply('gemini-models-result', models);
     } catch (error: any) {
