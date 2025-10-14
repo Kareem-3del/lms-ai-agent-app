@@ -27,7 +27,16 @@ export class SettingsManager {
         handwritingFont: 'Homemade Apple',
         handwritingColor: '#2d2d2d',
         fontSize: 18,
-        paperStyle: 'aged-vintage'
+        paperStyle: 'aged-vintage',
+        rotationVariance: 0.5,
+        spacingVariance: 5,
+        wordSpacingVariance: 10,
+        baselineVariance: 0.8,
+        inkDensityVariance: 25,
+        blurVariance: 15,
+        sizeVariance: 3,
+        enableMarginDoodles: true,
+        enableInkSpots: true
       }
     });
   }
@@ -52,7 +61,16 @@ export class SettingsManager {
       handwritingFont: this.store.get('handwritingFont'),
       handwritingColor: this.store.get('handwritingColor'),
       fontSize: this.store.get('fontSize'),
-      paperStyle: this.store.get('paperStyle')
+      paperStyle: this.store.get('paperStyle'),
+      rotationVariance: this.store.get('rotationVariance'),
+      spacingVariance: this.store.get('spacingVariance'),
+      wordSpacingVariance: this.store.get('wordSpacingVariance'),
+      baselineVariance: this.store.get('baselineVariance'),
+      inkDensityVariance: this.store.get('inkDensityVariance'),
+      blurVariance: this.store.get('blurVariance'),
+      sizeVariance: this.store.get('sizeVariance'),
+      enableMarginDoodles: this.store.get('enableMarginDoodles'),
+      enableInkSpots: this.store.get('enableInkSpots')
     };
   }
 
@@ -76,6 +94,15 @@ export class SettingsManager {
     if (config.handwritingColor !== undefined) this.store.set('handwritingColor', config.handwritingColor);
     if (config.fontSize !== undefined) this.store.set('fontSize', config.fontSize);
     if (config.paperStyle !== undefined) this.store.set('paperStyle', config.paperStyle);
+    if (config.rotationVariance !== undefined) this.store.set('rotationVariance', config.rotationVariance);
+    if (config.spacingVariance !== undefined) this.store.set('spacingVariance', config.spacingVariance);
+    if (config.wordSpacingVariance !== undefined) this.store.set('wordSpacingVariance', config.wordSpacingVariance);
+    if (config.baselineVariance !== undefined) this.store.set('baselineVariance', config.baselineVariance);
+    if (config.inkDensityVariance !== undefined) this.store.set('inkDensityVariance', config.inkDensityVariance);
+    if (config.blurVariance !== undefined) this.store.set('blurVariance', config.blurVariance);
+    if (config.sizeVariance !== undefined) this.store.set('sizeVariance', config.sizeVariance);
+    if (config.enableMarginDoodles !== undefined) this.store.set('enableMarginDoodles', config.enableMarginDoodles);
+    if (config.enableInkSpots !== undefined) this.store.set('enableInkSpots', config.enableInkSpots);
   }
 
   isConfigured(): boolean {

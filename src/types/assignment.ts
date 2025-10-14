@@ -64,4 +64,14 @@ export interface LMSConfig {
   handwritingColor?: string; // Ink/text color for handwriting: hex color code (e.g., '#2d2d2d')
   fontSize?: number; // Font size in pixels (14-24px)
   paperStyle?: string; // Paper background style: 'aged-vintage', 'clean-white', 'lined-notebook', 'parchment', etc.
+  // Handwriting humanization & randomization settings
+  rotationVariance?: number; // Rotation variance in degrees (0-3), default: 0.5
+  spacingVariance?: number; // Letter spacing variance percentage (0-20), default: 5
+  wordSpacingVariance?: number; // Word spacing variance percentage (0-30), default: 10
+  baselineVariance?: number; // Baseline shift in pixels (0-3), default: 0.8
+  inkDensityVariance?: number; // Ink density variance percentage (0-100), default: 25
+  blurVariance?: number; // Blur & smudge variance percentage (0-50), default: 15
+  sizeVariance?: number; // Character size variance percentage (0-15), default: 3
+  enableMarginDoodles?: boolean; // Enable margin doodles & annotations, default: true
+  enableInkSpots?: boolean; // Enable ink spots & bleed effects, default: true
 }

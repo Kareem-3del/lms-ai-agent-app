@@ -106,6 +106,7 @@ const handwritingOptions = document.getElementById('handwritingOptions');
 const handwritingColorSize = document.getElementById('handwritingColorSize');
 const handwritingFontSize = document.getElementById('handwritingFontSize');
 const handwritingPaperStyle = document.getElementById('handwritingPaperStyle');
+const handwritingRandomization = document.getElementById('handwritingRandomization');
 
 useHandwriting.addEventListener('change', () => {
   if (useHandwriting.checked) {
@@ -113,11 +114,13 @@ useHandwriting.addEventListener('change', () => {
     handwritingColorSize.style.display = 'block';
     handwritingFontSize.style.display = 'block';
     handwritingPaperStyle.style.display = 'block';
+    handwritingRandomization.style.display = 'block';
   } else {
     handwritingOptions.style.display = 'none';
     handwritingColorSize.style.display = 'none';
     handwritingFontSize.style.display = 'none';
     handwritingPaperStyle.style.display = 'none';
+    handwritingRandomization.style.display = 'none';
   }
 });
 
@@ -154,6 +157,70 @@ function updateColorPreview() {
 
 handwritingColorPicker.addEventListener('input', updateColorPreview);
 handwritingColorPicker.addEventListener('change', updateColorPreview);
+
+// Randomization sliders value display
+const rotationVarianceSlider = document.getElementById('rotationVariance');
+const rotationVarianceValue = document.getElementById('rotationVarianceValue');
+rotationVarianceSlider.addEventListener('input', () => {
+  rotationVarianceValue.textContent = `${rotationVarianceSlider.value} degrees`;
+});
+
+const spacingVarianceSlider = document.getElementById('spacingVariance');
+const spacingVarianceValue = document.getElementById('spacingVarianceValue');
+spacingVarianceSlider.addEventListener('input', () => {
+  spacingVarianceValue.textContent = `${spacingVarianceSlider.value}%`;
+});
+
+const wordSpacingVarianceSlider = document.getElementById('wordSpacingVariance');
+const wordSpacingVarianceValue = document.getElementById('wordSpacingVarianceValue');
+wordSpacingVarianceSlider.addEventListener('input', () => {
+  wordSpacingVarianceValue.textContent = `${wordSpacingVarianceSlider.value}%`;
+});
+
+const baselineVarianceSlider = document.getElementById('baselineVariance');
+const baselineVarianceValue = document.getElementById('baselineVarianceValue');
+baselineVarianceSlider.addEventListener('input', () => {
+  baselineVarianceValue.textContent = `${baselineVarianceSlider.value}px`;
+});
+
+const inkDensityVarianceSlider = document.getElementById('inkDensityVariance');
+const inkDensityVarianceValue = document.getElementById('inkDensityVarianceValue');
+inkDensityVarianceSlider.addEventListener('input', () => {
+  inkDensityVarianceValue.textContent = `${inkDensityVarianceSlider.value}%`;
+});
+
+const blurVarianceSlider = document.getElementById('blurVariance');
+const blurVarianceValue = document.getElementById('blurVarianceValue');
+blurVarianceSlider.addEventListener('input', () => {
+  blurVarianceValue.textContent = `${blurVarianceSlider.value}%`;
+});
+
+const sizeVarianceSlider = document.getElementById('sizeVariance');
+const sizeVarianceValue = document.getElementById('sizeVarianceValue');
+sizeVarianceSlider.addEventListener('input', () => {
+  sizeVarianceValue.textContent = `${sizeVarianceSlider.value}%`;
+});
+
+// Reset randomization button
+document.getElementById('resetRandomization').addEventListener('click', () => {
+  rotationVarianceSlider.value = 0.5;
+  rotationVarianceValue.textContent = '0.5 degrees';
+  spacingVarianceSlider.value = 5;
+  spacingVarianceValue.textContent = '5%';
+  wordSpacingVarianceSlider.value = 10;
+  wordSpacingVarianceValue.textContent = '10%';
+  baselineVarianceSlider.value = 0.8;
+  baselineVarianceValue.textContent = '0.8px';
+  inkDensityVarianceSlider.value = 25;
+  inkDensityVarianceValue.textContent = '25%';
+  blurVarianceSlider.value = 15;
+  blurVarianceValue.textContent = '15%';
+  sizeVarianceSlider.value = 3;
+  sizeVarianceValue.textContent = '3%';
+  document.getElementById('enableMarginDoodles').checked = true;
+  document.getElementById('enableInkSpots').checked = true;
+  addDebugLog('Reset randomization settings to defaults');
+});
 
 // Tab switching
 tabBtns.forEach(btn => {
@@ -217,7 +284,16 @@ settingsForm.addEventListener('submit', (e) => {
     handwritingFont: formData.get('handwritingFont') || 'Homemade Apple',
     handwritingColor: formData.get('handwritingColor') || '#2d2d2d',
     fontSize: parseInt(formData.get('fontSize')) || 18,
-    paperStyle: formData.get('paperStyle') || 'aged-vintage'
+    paperStyle: formData.get('paperStyle') || 'aged-vintage',
+    rotationVariance: parseFloat(formData.get('rotationVariance')) || 0.5,
+    spacingVariance: parseInt(formData.get('spacingVariance')) || 5,
+    wordSpacingVariance: parseInt(formData.get('wordSpacingVariance')) || 10,
+    baselineVariance: parseFloat(formData.get('baselineVariance')) || 0.8,
+    inkDensityVariance: parseInt(formData.get('inkDensityVariance')) || 25,
+    blurVariance: parseInt(formData.get('blurVariance')) || 15,
+    sizeVariance: parseInt(formData.get('sizeVariance')) || 3,
+    enableMarginDoodles: formData.get('enableMarginDoodles') === 'on',
+    enableInkSpots: formData.get('enableInkSpots') === 'on'
   };
 
   if (useCredentials) {
@@ -265,6 +341,24 @@ ipcRenderer.on('settings-loaded', (event, loadedSettings) => {
     document.getElementById('fontSizeValue').textContent = `${settings.fontSize || 18}px`;
     document.getElementById('paperStyle').value = settings.paperStyle || 'aged-vintage';
 
+    // Set randomization settings
+    document.getElementById('rotationVariance').value = settings.rotationVariance !== undefined ? settings.rotationVariance : 0.5;
+    document.getElementById('rotationVarianceValue').textContent = `${settings.rotationVariance !== undefined ? settings.rotationVariance : 0.5} degrees`;
+    document.getElementById('spacingVariance').value = settings.spacingVariance !== undefined ? settings.spacingVariance : 5;
+    document.getElementById('spacingVarianceValue').textContent = `${settings.spacingVariance !== undefined ? settings.spacingVariance : 5}%`;
+    document.getElementById('wordSpacingVariance').value = settings.wordSpacingVariance !== undefined ? settings.wordSpacingVariance : 10;
+    document.getElementById('wordSpacingVarianceValue').textContent = `${settings.wordSpacingVariance !== undefined ? settings.wordSpacingVariance : 10}%`;
+    document.getElementById('baselineVariance').value = settings.baselineVariance !== undefined ? settings.baselineVariance : 0.8;
+    document.getElementById('baselineVarianceValue').textContent = `${settings.baselineVariance !== undefined ? settings.baselineVariance : 0.8}px`;
+    document.getElementById('inkDensityVariance').value = settings.inkDensityVariance !== undefined ? settings.inkDensityVariance : 25;
+    document.getElementById('inkDensityVarianceValue').textContent = `${settings.inkDensityVariance !== undefined ? settings.inkDensityVariance : 25}%`;
+    document.getElementById('blurVariance').value = settings.blurVariance !== undefined ? settings.blurVariance : 15;
+    document.getElementById('blurVarianceValue').textContent = `${settings.blurVariance !== undefined ? settings.blurVariance : 15}%`;
+    document.getElementById('sizeVariance').value = settings.sizeVariance !== undefined ? settings.sizeVariance : 3;
+    document.getElementById('sizeVarianceValue').textContent = `${settings.sizeVariance !== undefined ? settings.sizeVariance : 3}%`;
+    document.getElementById('enableMarginDoodles').checked = settings.enableMarginDoodles !== false;
+    document.getElementById('enableInkSpots').checked = settings.enableInkSpots !== false;
+
     // Update color preview
     updateColorPreview();
 
@@ -273,6 +367,7 @@ ipcRenderer.on('settings-loaded', (event, loadedSettings) => {
       document.getElementById('handwritingColorSize').style.display = 'block';
       document.getElementById('handwritingFontSize').style.display = 'block';
       document.getElementById('handwritingPaperStyle').style.display = 'block';
+      document.getElementById('handwritingRandomization').style.display = 'block';
     }
 
     const useCredentials = settings.useCredentialLogin !== false;

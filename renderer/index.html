@@ -240,6 +240,97 @@ Example:
           <small>Choose paper texture and background style</small>
         </div>
 
+        <div class="form-group" id="handwritingRandomization" style="display: none; margin-left: 1.5rem;">
+          <label>Handwriting Humanization & Randomization:</label>
+          <p style="font-size: 13px; color: #666; margin: 8px 0;">Make your handwriting look more natural with imperfections and variations</p>
+
+          <div style="margin: 15px 0;">
+            <label for="rotationVariance">Rotation Variance (Character Tilt):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="rotationVariance" name="rotationVariance" min="0" max="3" value="0.5" step="0.1">
+              <span id="rotationVarianceValue" style="min-width: 80px;">0.5 degrees</span>
+            </div>
+            <small>How much each line/word tilts randomly (0 = perfect, 3 = very tilted)</small>
+          </div>
+
+          <div style="margin: 15px 0;">
+            <label for="spacingVariance">Letter Spacing Variance:</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="spacingVariance" name="spacingVariance" min="0" max="20" value="5" step="1">
+              <span id="spacingVarianceValue" style="min-width: 60px;">5%</span>
+            </div>
+            <small>Random spacing between letters (0 = perfect spacing, 20 = very uneven)</small>
+          </div>
+
+          <div style="margin: 15px 0;">
+            <label for="wordSpacingVariance">Word Spacing Variance:</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="wordSpacingVariance" name="wordSpacingVariance" min="0" max="30" value="10" step="1">
+              <span id="wordSpacingVarianceValue" style="min-width: 60px;">10%</span>
+            </div>
+            <small>Random spacing between words (0 = consistent, 30 = very varied)</small>
+          </div>
+
+          <div style="margin: 15px 0;">
+            <label for="baselineVariance">Baseline Shift (Vertical Wobble):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="baselineVariance" name="baselineVariance" min="0" max="3" value="0.8" step="0.1">
+              <span id="baselineVarianceValue" style="min-width: 60px;">0.8px</span>
+            </div>
+            <small>Vertical position wobble of text (0 = straight line, 3 = wavy baseline)</small>
+          </div>
+
+          <div style="margin: 15px 0;">
+            <label for="inkDensityVariance">Ink Density Variance (Pen Pressure):</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="inkDensityVariance" name="inkDensityVariance" min="0" max="100" value="25" step="5">
+              <span id="inkDensityVarianceValue" style="min-width: 60px;">25%</span>
+            </div>
+            <small>Simulate pen pressure changes (0 = uniform, 100 = very varied darkness)</small>
+          </div>
+
+          <div style="margin: 15px 0;">
+            <label for="blurVariance">Blur & Smudge Variance:</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="blurVariance" name="blurVariance" min="0" max="50" value="15" step="5">
+              <span id="blurVarianceValue" style="min-width: 60px;">15%</span>
+            </div>
+            <small>Random smudging and blur effects (0 = crystal clear, 50 = naturally smudged)</small>
+          </div>
+
+          <div style="margin: 15px 0;">
+            <label for="sizeVariance">Character Size Variance:</label>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="range" id="sizeVariance" name="sizeVariance" min="0" max="15" value="3" step="1">
+              <span id="sizeVarianceValue" style="min-width: 60px;">3%</span>
+            </div>
+            <small>Random size variations in letters (0 = uniform, 15 = visibly different sizes)</small>
+          </div>
+
+          <div style="margin: 15px 0; padding: 12px; background: rgba(52, 152, 219, 0.08); border-radius: 6px; border-left: 3px solid #3498db;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="checkbox" id="enableMarginDoodles" name="enableMarginDoodles" checked style="margin-right: 8px;">
+              <span style="font-weight: 500;">Enable Margin Doodles & Annotations</span>
+            </label>
+            <small style="display: block; margin-top: 6px; margin-left: 24px;">Add random checkmarks, stars, underlines, and margin notes (✓ ★ → !)</small>
+          </div>
+
+          <div style="margin: 15px 0; padding: 12px; background: rgba(46, 204, 113, 0.08); border-radius: 6px; border-left: 3px solid #2ecc71;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+              <input type="checkbox" id="enableInkSpots" name="enableInkSpots" checked style="margin-right: 8px;">
+              <span style="font-weight: 500;">Enable Ink Spots & Bleed Effects</span>
+            </label>
+            <small style="display: block; margin-top: 6px; margin-left: 24px;">Add subtle ink spots, bleeds, and smudges throughout the page</small>
+          </div>
+
+          <div style="margin: 20px 0 10px 0; padding-top: 15px; border-top: 2px dashed rgba(0,0,0,0.1);">
+            <button type="button" id="resetRandomization" class="btn btn-secondary" style="width: 100%;">
+              🔄 Reset to Default Humanization
+            </button>
+            <small style="display: block; margin-top: 8px; text-align: center; color: #888;">Restore recommended natural handwriting settings</small>
+          </div>
+        </div>
+
         <div class="form-actions">
           <button type="submit" class="btn btn-primary">Save Settings</button>
           <button type="button" id="cancelBtn" class="btn">Cancel</button>

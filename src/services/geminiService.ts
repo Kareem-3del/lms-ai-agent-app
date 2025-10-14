@@ -19,6 +19,15 @@ export class GeminiService {
   private handwritingColor: string;
   private fontSize: number;
   private paperStyle: string;
+  private rotationVariance: number;
+  private spacingVariance: number;
+  private wordSpacingVariance: number;
+  private baselineVariance: number;
+  private inkDensityVariance: number;
+  private blurVariance: number;
+  private sizeVariance: number;
+  private enableMarginDoodles: boolean;
+  private enableInkSpots: boolean;
 
   constructor(
     apiKey: string,
@@ -30,7 +39,16 @@ export class GeminiService {
     handwritingFont: string = 'Homemade Apple',
     handwritingColor: string = '#2d2d2d',
     fontSize: number = 18,
-    paperStyle: string = 'aged-vintage'
+    paperStyle: string = 'aged-vintage',
+    rotationVariance: number = 0.5,
+    spacingVariance: number = 5,
+    wordSpacingVariance: number = 10,
+    baselineVariance: number = 0.8,
+    inkDensityVariance: number = 25,
+    blurVariance: number = 15,
+    sizeVariance: number = 3,
+    enableMarginDoodles: boolean = true,
+    enableInkSpots: boolean = true
   ) {
     this.apiKey = apiKey;
     this.modelName = modelName;
@@ -41,6 +59,15 @@ export class GeminiService {
     this.handwritingColor = handwritingColor;
     this.fontSize = fontSize;
     this.paperStyle = paperStyle;
+    this.rotationVariance = rotationVariance;
+    this.spacingVariance = spacingVariance;
+    this.wordSpacingVariance = wordSpacingVariance;
+    this.baselineVariance = baselineVariance;
+    this.inkDensityVariance = inkDensityVariance;
+    this.blurVariance = blurVariance;
+    this.sizeVariance = sizeVariance;
+    this.enableMarginDoodles = enableMarginDoodles;
+    this.enableInkSpots = enableInkSpots;
     this.pathManager = new PathManager(customPath);
     this.preferencesFilePath = path.join(
       customPath || app.getPath('userData'),
