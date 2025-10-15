@@ -7,6 +7,8 @@ let signaturePad = null;
 let currentAssignment = null;
 let charRotationEnabled = true;
 let charRotationAngle = 0;
+let scribbleEnabled = true;
+let scribbleIntensity = 3;
 
 /**
  * Initialize the handwriting canvas
@@ -28,16 +30,30 @@ function initializeHandwritingCanvas() {
     throttle: 16, // 60fps
     velocityFilterWeight: 0.7,
     onEnd: () => {
-      console.log('Stroke ended, checking rotation...');
-      if (charRotationEnabled && charRotationAngle !== 0) {
-        console.log('Applying rotation to stroke');
-        // Add a small delay to ensure the stroke is fully processed
-        setTimeout(() => {
+      console.log('Stroke ended, checking effects...');
+
+      // Add a small delay to ensure the stroke is fully processed
+      setTimeout(() => {
+        let modified = false;
+
+        // Apply scribble effect first
+        if (scribbleEnabled && scribbleIntensity > 0) {
+          console.log('Applying scribble effect');
+          applyScribbleEffect();
+          modified = true;
+        }
+
+        // Then apply rotation
+        if (charRotationEnabled && charRotationAngle !== 0) {
+          console.log('Applying rotation to stroke');
           applyCharacterRotationToStroke();
-        }, 50);
-      } else {
-        console.log('Rotation disabled or angle is 0');
-      }
+          modified = true;
+        }
+
+        if (!modified) {
+          console.log('No effects applied');
+        }
+      }, 50);
     }
   });
 
