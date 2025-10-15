@@ -1183,14 +1183,19 @@ Generated: ${new Date().toLocaleString()}
         radial-gradient(circle at 18% 28%, rgba(52, 73, 94, 0.04) 0%, transparent 45%),
         radial-gradient(circle at 65% 55%, rgba(52, 73, 94, 0.05) 0%, transparent 38%),
         radial-gradient(circle at 42% 78%, rgba(52, 73, 94, 0.03) 0%, transparent 32%),
-        radial-gradient(circle at 88% 35%, rgba(52, 73, 94, 0.035) 0%, transparent 28%);
+        radial-gradient(circle at 88% 35%, rgba(52, 73, 94, 0.035) 0%, transparent 28%),
+        /* Additional random ink spots */
+        radial-gradient(circle at 25% 15%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.06) 0%, transparent 20%),
+        radial-gradient(circle at 72% 82%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.04) 0%, transparent 18%),
+        radial-gradient(circle at 45% 60%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.03) 0%, transparent 15%),
+        radial-gradient(circle at 90% 20%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.05) 0%, transparent 22%);
       pointer-events: none;
       z-index: 1;
       filter: blur(0.5px);
     }
     /* Enhanced margin doodles and scribbles */
     body::after {
-      content: '~ ✓ ★ ⟿ ◯ ✗';
+      content: '~ ✓ ★ ⟿ ◯ ✗ / ≈ ∼';
       position: absolute;
       top: 45px;
       right: 25px;
@@ -1217,28 +1222,39 @@ Generated: ${new Date().toLocaleString()}
       ` : ''}
     }
     ${this.useHandwriting ? `
-    /* Add hand-drawn underline effect to h1 */
+    /* Add hand-drawn underline effect to h1 - wavy and natural */
     h1::after {
-      content: '';
+      content: '≈≈≈≈≈≈≈≈≈≈≈≈≈';
       position: absolute;
       bottom: 8px;
       left: 0;
-      width: 30%;
-      height: 2px;
-      background: rgba(52, 152, 219, 0.4);
-      transform: rotate(-0.5deg);
-      border-radius: 50%;
+      font-size: 8px;
+      color: rgba(52, 152, 219, 0.35);
+      transform: rotate(-0.8deg);
+      letter-spacing: -2px;
+      opacity: 0.7;
     }
-    /* Scribbles near h1 */
+    /* Scribbles near h1 - more chaotic and natural */
     h1::before {
-      content: '~ ∼ ≈';
+      content: '~ ∼ ≈ ⟿ ∼ ~';
       position: absolute;
       bottom: -12px;
-      left: -30px;
+      left: -35px;
       font-size: 11px;
       color: rgba(70, 70, 70, 0.22);
       transform: rotate(5deg);
       letter-spacing: 4px;
+    }
+    /* Additional random marks around h1 */
+    h1:first-of-type::before {
+      content: '✧ ★';
+      position: absolute;
+      top: -15px;
+      right: 20px;
+      font-size: 10px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2);
+      transform: rotate(-12deg);
+      letter-spacing: 8px;
     }
     ` : ''}
     h2 {
@@ -1314,8 +1330,74 @@ Generated: ${new Date().toLocaleString()}
       opacity: calc(0.88 + var(--ink-flow, 0) * 0.12);
       filter: contrast(calc(0.93 + var(--ink-flow, 0) * 0.08));
       ` : ''}
+      /* Natural wobble - always on for handwriting */
+      transform: rotate(calc((sin(var(--para-seed, 0)) * 0.5)deg));
       ` : ''}
     }
+    ${this.useHandwriting ? `
+    /* Random natural variations for every paragraph - always visible */
+    p:nth-child(5n+1), li:nth-child(5n+1) {
+      transform: rotate(0.4deg) translateY(0.3px);
+      opacity: 0.88;
+      letter-spacing: 0.02em;
+    }
+    p:nth-child(5n+2), li:nth-child(5n+2) {
+      transform: rotate(-0.3deg) translateY(-0.2px);
+      opacity: 0.92;
+      filter: contrast(0.96);
+    }
+    p:nth-child(5n+3), li:nth-child(5n+3) {
+      transform: rotate(0.2deg) translateY(0.4px);
+      opacity: 0.90;
+      letter-spacing: 0.015em;
+    }
+    p:nth-child(5n+4), li:nth-child(5n+4) {
+      transform: rotate(-0.5deg) translateY(-0.1px);
+      opacity: 0.89;
+      word-spacing: 0.015em;
+    }
+    p:nth-child(5n), li:nth-child(5n) {
+      transform: rotate(0.35deg) translateY(0.25px);
+      opacity: 0.91;
+      filter: blur(0.2px);
+    }
+    /* Natural scribble marks - random dots and dashes */
+    p:nth-of-type(3)::before {
+      content: '·';
+      position: absolute;
+      left: -12px;
+      top: 8px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2);
+      font-size: 18px;
+    }
+    p:nth-of-type(7)::after {
+      content: '~';
+      position: absolute;
+      right: -15px;
+      top: 5px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15);
+      font-size: 12px;
+      transform: rotate(-25deg);
+    }
+    p:nth-of-type(11)::before {
+      content: '✓';
+      position: absolute;
+      left: -18px;
+      top: 6px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18);
+      font-size: 14px;
+      transform: rotate(-15deg);
+    }
+    p:nth-of-type(15)::after {
+      content: '⟿';
+      position: absolute;
+      right: -20px;
+      top: 10px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.16);
+      font-size: 13px;
+      transform: rotate(8deg);
+    }
+    ` : ''}
     ${this.useHandwriting && this.randomWordRotation ? `
     /* Word-level rotation for natural handwriting */
     p, li {
@@ -1340,16 +1422,50 @@ Generated: ${new Date().toLocaleString()}
     }
     ` : ''}
     ${this.useHandwriting ? `
-    /* Add ink bleed effect to certain words */
+    /* Add ink bleed effect to certain words with natural variation */
     strong, b {
       color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.95);
       filter: contrast(0.98) brightness(0.98);
       text-shadow: 0.3px 0.3px 0.8px rgba(0,0,0,0.08);
       letter-spacing: 0.008em;
+      position: relative;
+    }
+    /* Random underlines on important text */
+    strong:nth-of-type(2)::after {
+      content: '≈≈≈≈≈≈≈';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      font-size: 6px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3);
+      letter-spacing: -1px;
+      transform: rotate(-0.5deg);
+    }
+    strong:nth-of-type(4)::before {
+      content: '★';
+      position: absolute;
+      left: -15px;
+      top: 0;
+      font-size: 9px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2);
+      transform: rotate(-15deg);
     }
     em, i {
       opacity: 0.88;
       color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.90);
+      position: relative;
+      transform: rotate(-0.2deg);
+    }
+    /* Occasional marks on italic text */
+    em:nth-of-type(3)::after {
+      content: '~';
+      position: absolute;
+      right: -10px;
+      top: 2px;
+      font-size: 8px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18);
+      transform: rotate(-25deg);
     }
     ` : ''}
     ${this.useHandwriting ? `
@@ -1448,19 +1564,66 @@ Generated: ${new Date().toLocaleString()}
       color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.80 + this.inkDensityVariance * 0.0026});
       filter: contrast(${0.97 - this.blurVariance * 0.0004}) ${this.blurVariance > 10 ? `blur(${this.blurVariance * 0.008}px)` : ''};
     }
-    ${this.enableInkSpots ? `
-    /* Random ink spots and bleed on specific elements */
+    ${this.enableInkSpots || true ? `
+    /* Random ink spots and bleed on specific elements - always enabled for natural look */
+    p:nth-of-type(4)::after {
+      content: '·';
+      position: absolute;
+      top: 6px;
+      right: -12px;
+      font-size: 20px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15);
+      opacity: 0.5;
+    }
     p:nth-of-type(7)::after {
       content: '';
       position: absolute;
       top: 8px;
       right: -15px;
-      width: ${2 + this.blurVariance * 0.1}px;
-      height: ${2 + this.blurVariance * 0.1}px;
+      width: 3px;
+      height: 3px;
       border-radius: 50%;
-      background: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.1 + this.inkDensityVariance * 0.002});
-      box-shadow: 1px 1px 2px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.03 + this.blurVariance * 0.001});
-      ${this.blurVariance > 15 ? `filter: blur(${this.blurVariance * 0.04}px);` : ''}
+      background: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2);
+      box-shadow: 1px 1px 2px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08);
+      filter: blur(0.5px);
+    }
+    p:nth-of-type(9)::before {
+      content: '~';
+      position: absolute;
+      left: -16px;
+      top: 10px;
+      font-size: 11px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18);
+      transform: rotate(-20deg);
+    }
+    p:nth-of-type(12)::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      right: -10px;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25);
+      box-shadow: 2px 2px 3px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1);
+    }
+    li:nth-of-type(4)::before {
+      content: '→';
+      position: absolute;
+      left: -25px;
+      top: 3px;
+      font-size: 10px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.16);
+      transform: rotate(-8deg);
+    }
+    li:nth-of-type(7)::after {
+      content: '✓';
+      position: absolute;
+      right: -18px;
+      top: 5px;
+      font-size: 12px;
+      color: rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.14);
+      transform: rotate(15deg);
     }
     ` : ''}
     ` : ''}

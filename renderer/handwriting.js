@@ -135,6 +135,24 @@ function setupCanvasControls() {
       charRotationEnabled = e.target.checked;
     });
   }
+
+  // Scribble controls
+  const scribbleIntensityInput = document.getElementById('scribbleIntensity');
+  const scribbleIntensityValue = document.getElementById('scribbleIntensityValue');
+  const enableScribbleInput = document.getElementById('enableScribble');
+
+  if (scribbleIntensityInput && scribbleIntensityValue) {
+    scribbleIntensityInput.addEventListener('input', (e) => {
+      scribbleIntensity = parseFloat(e.target.value);
+      scribbleIntensityValue.textContent = scribbleIntensity;
+    });
+  }
+
+  if (enableScribbleInput) {
+    enableScribbleInput.addEventListener('change', (e) => {
+      scribbleEnabled = e.target.checked;
+    });
+  }
 }
 
 /**
@@ -251,6 +269,74 @@ function applyCharacterRotationToStroke() {
   signaturePad.fromData(data);
   
   console.log('Rotation applied and redrawn');
+}
+
+/**
+ * Apply natural scribble effect to the last stroke
+ */
+function applyScribbleEffect() {
+  if (!scribbleEnabled || scribbleIntensity === 0) return;
+
+  console.log('Applying scribble with intensity:', scribbleIntensity);
+
+  const data = signaturePad.toData();
+  if (!data || data.length === 0) {
+    console.log('No data to scribble');
+    return;
+  }
+
+  // Get the last stroke
+  const lastStroke = data[data.length - 1];
+  if (!lastStroke || !lastStroke.points || lastStroke.points.length === 0) {
+    console.log('No valid stroke to scribble');
+    return;
+  }
+
+  console.log('Adding natural variations to stroke with', lastStroke.points.length, 'points');
+
+  // Apply natural variations to each point
+  const intensity = scribbleIntensity / 10; // Normalize to 0-1
+
+  lastStroke.points.forEach((point, index) => {
+    // Skip first and last points to maintain stroke endpoints
+    if (index === 0 || index === lastStroke.points.length - 1) return;
+
+    // Random jitter - creates natural hand tremor effect
+    const jitterX = (Math.random() - 0.5) * 2 * intensity * 2;
+    const jitterY = (Math.random() - 0.5) * 2 * intensity * 2;
+
+    // Apply smooth variation using sine wave for more natural wobble
+    const smoothFactorX = Math.sin(index * 0.3 + Math.random() * Math.PI) * intensity * 1.5;
+    const smoothFactorY = Math.cos(index * 0.25 + Math.random() * Math.PI) * intensity * 1.5;
+
+    point.x += jitterX + smoothFactorX;
+    point.y += jitterY + smoothFactorY;
+
+    // Add slight pressure variation for more natural look
+    if (point.pressure !== undefined) {
+      const pressureVariation = (Math.random() - 0.5) * 0.1 * intensity;
+      point.pressure = Math.max(0.1, Math.min(1, point.pressure + pressureVariation));
+    }
+  });
+
+  // Add occasional larger wobbles to simulate hand movement adjustments
+  const wobblePoints = Math.floor(lastStroke.points.length * 0.2 * intensity);
+  for (let i = 0; i < wobblePoints; i++) {
+    const randomIndex = Math.floor(Math.random() * (lastStroke.points.length - 2)) + 1;
+    const point = lastStroke.points[randomIndex];
+
+    const wobbleX = (Math.random() - 0.5) * 3 * intensity;
+    const wobbleY = (Math.random() - 0.5) * 3 * intensity;
+
+    point.x += wobbleX;
+    point.y += wobbleY;
+  }
+
+  // Clear and redraw the signature pad with the scribbled stroke
+  signaturePad.clear();
+  signaturePad.fromData(data);
+
+  console.log('Scribble effect applied and redrawn');
 }
 
 /**
