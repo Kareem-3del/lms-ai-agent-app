@@ -743,6 +743,17 @@ Example:
             </label>
           </div>
           <div class="tool-group">
+            <label>
+              <input type="checkbox" id="enableScribble" checked>
+              Enable Natural Scribble
+            </label>
+          </div>
+          <div class="tool-group">
+            <label>Scribble Intensity:</label>
+            <input type="range" id="scribbleIntensity" min="0" max="10" value="3" step="0.5">
+            <span id="scribbleIntensityValue">3</span>
+          </div>
+          <div class="tool-group">
             <button class="btn btn-secondary" onclick="clearCanvas()">Clear</button>
             <button class="btn btn-secondary" onclick="undoStroke()">Undo</button>
             <button class="btn btn-primary" onclick="testRotation()">Test 45° Rotation</button>
