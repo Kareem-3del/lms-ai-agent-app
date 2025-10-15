@@ -5,6 +5,8 @@ const SignaturePad = require('signature_pad').default;
 // Canvas and signature pad state
 let signaturePad = null;
 let currentAssignment = null;
+let charRotationEnabled = true;
+let charRotationAngle = 0;
 
 /**
  * Initialize the handwriting canvas
@@ -24,7 +26,19 @@ function initializeHandwritingCanvas() {
     minWidth: 1,
     maxWidth: 2,
     throttle: 16, // 60fps
-    velocityFilterWeight: 0.7
+    velocityFilterWeight: 0.7,
+    onEnd: () => {
+      console.log('Stroke ended, checking rotation...');
+      if (charRotationEnabled && charRotationAngle !== 0) {
+        console.log('Applying rotation to stroke');
+        // Add a small delay to ensure the stroke is fully processed
+        setTimeout(() => {
+          applyCharacterRotationToStroke();
+        }, 50);
+      } else {
+        console.log('Rotation disabled or angle is 0');
+      }
+    }
   });
 
   // Setup pen color and size controls
@@ -69,6 +83,9 @@ function setupCanvasControls() {
   const penColorInput = document.getElementById('penColor');
   const penSizeInput = document.getElementById('penSize');
   const penSizeValue = document.getElementById('penSizeValue');
+  const charRotationInput = document.getElementById('charRotation');
+  const charRotationValue = document.getElementById('charRotationValue');
+  const enableCharRotationInput = document.getElementById('enableCharRotation');
 
   if (penColorInput) {
     penColorInput.addEventListener('change', (e) => {
@@ -87,6 +104,19 @@ function setupCanvasControls() {
         signaturePad.minWidth = size * 0.5;
         signaturePad.maxWidth = size;
       }
+    });
+  }
+
+  if (charRotationInput && charRotationValue) {
+    charRotationInput.addEventListener('input', (e) => {
+      charRotationAngle = parseFloat(e.target.value);
+      charRotationValue.textContent = charRotationAngle;
+    });
+  }
+
+  if (enableCharRotationInput) {
+    enableCharRotationInput.addEventListener('change', (e) => {
+      charRotationEnabled = e.target.checked;
     });
   }
 }
@@ -141,6 +171,101 @@ function undoStroke() {
       signaturePad.fromData(data);
     }
   }
+}
+
+/**
+ * Apply character rotation to the last stroke
+ */
+function applyCharacterRotationToStroke() {
+  if (!charRotationEnabled || charRotationAngle === 0) return;
+  
+  console.log('Applying rotation:', charRotationAngle, 'degrees');
+  
+  const data = signaturePad.toData();
+  if (!data || data.length === 0) {
+    console.log('No data to rotate');
+    return;
+  }
+  
+  // Get the last stroke
+  const lastStroke = data[data.length - 1];
+  if (!lastStroke || !lastStroke.points || lastStroke.points.length === 0) {
+    console.log('No valid stroke to rotate');
+    return;
+  }
+  
+  console.log('Rotating stroke with', lastStroke.points.length, 'points');
+  
+  // Calculate the center of the stroke for rotation
+  let centerX = 0, centerY = 0;
+  lastStroke.points.forEach(point => {
+    centerX += point.x;
+    centerY += point.y;
+  });
+  centerX /= lastStroke.points.length;
+  centerY /= lastStroke.points.length;
+  
+  console.log('Rotation center:', centerX, centerY);
+  
+  // Apply rotation to each point in the stroke
+  const angleRad = (charRotationAngle * Math.PI) / 180;
+  const cos = Math.cos(angleRad);
+  const sin = Math.sin(angleRad);
+  
+  lastStroke.points.forEach((point, index) => {
+    // Translate to origin
+    const x = point.x - centerX;
+    const y = point.y - centerY;
+    
+    // Apply rotation
+    const rotatedX = x * cos - y * sin;
+    const rotatedY = x * sin + y * cos;
+    
+    // Translate back
+    point.x = rotatedX + centerX;
+    point.y = rotatedY + centerY;
+    
+    if (index === 0) {
+      console.log('First point rotated from', x + centerX, y + centerY, 'to', point.x, point.y);
+    }
+  });
+  
+  // Clear and redraw the signature pad with the rotated stroke
+  signaturePad.clear();
+  signaturePad.fromData(data);
+  
+  console.log('Rotation applied and redrawn');
+}
+
+/**
+ * Test rotation with a preset angle
+ */
+function testRotation() {
+  console.log('Testing rotation...');
+  
+  // Set rotation to 45 degrees
+  charRotationAngle = 45;
+  charRotationEnabled = true;
+  
+  // Update UI
+  const charRotationInput = document.getElementById('charRotation');
+  const charRotationValue = document.getElementById('charRotationValue');
+  const enableCharRotationInput = document.getElementById('enableCharRotation');
+  
+  if (charRotationInput) {
+    charRotationInput.value = 45;
+  }
+  if (charRotationValue) {
+    charRotationValue.textContent = '45';
+  }
+  if (enableCharRotationInput) {
+    enableCharRotationInput.checked = true;
+  }
+  
+  console.log('Rotation set to 45 degrees, enabled:', charRotationEnabled);
+  
+  // Show a message
+  alert('Rotation set to 45°. Now draw something to see the rotation effect!');
 }
 
 /**

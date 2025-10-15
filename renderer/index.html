@@ -732,8 +732,20 @@ Example:
             <span id="penSizeValue">2</span>px
           </div>
           <div class="tool-group">
+            <label>Character Rotation:</label>
+            <input type="range" id="charRotation" min="0" max="360" value="0" step="5">
+            <span id="charRotationValue">0</span>°
+          </div>
+          <div class="tool-group">
+            <label>
+              <input type="checkbox" id="enableCharRotation" checked>
+              Enable Character Rotation
+            </label>
+          </div>
+          <div class="tool-group">
             <button class="btn btn-secondary" onclick="clearCanvas()">Clear</button>
             <button class="btn btn-secondary" onclick="undoStroke()">Undo</button>
+            <button class="btn btn-primary" onclick="testRotation()">Test 45° Rotation</button>
           </div>
         </div>
 
