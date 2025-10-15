@@ -26,7 +26,7 @@ export class SettingsManager {
         useHandwriting: true,
         handwritingFont: 'Homemade Apple',
         handwritingColor: '#2d2d2d',
-        fontSize: 18,
+        fontSize: 18, // Basic handwriting font size (used when useHandwriting is true in basic mode)
         paperStyle: 'aged-vintage',
         rotationVariance: 0.5,
         spacingVariance: 5,
@@ -36,7 +36,40 @@ export class SettingsManager {
         blurVariance: 15,
         sizeVariance: 3,
         enableMarginDoodles: true,
-        enableInkSpots: true
+        enableInkSpots: true,
+        // Advanced handwriting settings
+        paperBackground: 'plain-white',
+        tableBackground: 'none',
+        customFont: 'font1',
+        fontSizeAdvanced: 30, // Advanced handwriting font size (used in advanced settings section)
+        lineHeight: 1.30,
+        letterSpacing: 0,
+        wordSpacing: 0,
+        enableBlur: false,
+        enableShading: false,
+        enablePaperShadow: false,
+        enablePaperTexture: true,
+        enableShadowSilhouette: false,
+        enablePaperRotation: false,
+        enableInkFlow: false,
+        marginTop: 20,
+        marginRight: 20,
+        marginBottom: 20,
+        marginLeft: 20,
+        mirrorMargins: false,
+        marginTopEven: 20,
+        marginRightEven: 20,
+        marginBottomEven: 20,
+        marginLeftEven: 20,
+        randomWordRotation: false,
+        randomLetterRotation: false,
+        randomIndentation: false,
+        indentationRange: 5,
+        enableHyphenation: false,
+        paragraphSpacing: 0,
+        outputFormat: 'pdf',
+        outputQuality: 'normal',
+        pageSize: 'a4'
       }
     });
   }
@@ -70,7 +103,40 @@ export class SettingsManager {
       blurVariance: this.store.get('blurVariance'),
       sizeVariance: this.store.get('sizeVariance'),
       enableMarginDoodles: this.store.get('enableMarginDoodles'),
-      enableInkSpots: this.store.get('enableInkSpots')
+      enableInkSpots: this.store.get('enableInkSpots'),
+      // Advanced handwriting settings
+      paperBackground: this.store.get('paperBackground'),
+      tableBackground: this.store.get('tableBackground'),
+      customFont: this.store.get('customFont'),
+      fontSizeAdvanced: this.store.get('fontSizeAdvanced'),
+      lineHeight: this.store.get('lineHeight'),
+      letterSpacing: this.store.get('letterSpacing'),
+      wordSpacing: this.store.get('wordSpacing'),
+      enableBlur: this.store.get('enableBlur'),
+      enableShading: this.store.get('enableShading'),
+      enablePaperShadow: this.store.get('enablePaperShadow'),
+      enablePaperTexture: this.store.get('enablePaperTexture'),
+      enableShadowSilhouette: this.store.get('enableShadowSilhouette'),
+      enablePaperRotation: this.store.get('enablePaperRotation'),
+      enableInkFlow: this.store.get('enableInkFlow'),
+      marginTop: this.store.get('marginTop'),
+      marginRight: this.store.get('marginRight'),
+      marginBottom: this.store.get('marginBottom'),
+      marginLeft: this.store.get('marginLeft'),
+      mirrorMargins: this.store.get('mirrorMargins'),
+      marginTopEven: this.store.get('marginTopEven'),
+      marginRightEven: this.store.get('marginRightEven'),
+      marginBottomEven: this.store.get('marginBottomEven'),
+      marginLeftEven: this.store.get('marginLeftEven'),
+      randomWordRotation: this.store.get('randomWordRotation'),
+      randomLetterRotation: this.store.get('randomLetterRotation'),
+      randomIndentation: this.store.get('randomIndentation'),
+      indentationRange: this.store.get('indentationRange'),
+      enableHyphenation: this.store.get('enableHyphenation'),
+      paragraphSpacing: this.store.get('paragraphSpacing'),
+      outputFormat: this.store.get('outputFormat'),
+      outputQuality: this.store.get('outputQuality'),
+      pageSize: this.store.get('pageSize')
     };
   }
 
@@ -103,6 +169,39 @@ export class SettingsManager {
     if (config.sizeVariance !== undefined) this.store.set('sizeVariance', config.sizeVariance);
     if (config.enableMarginDoodles !== undefined) this.store.set('enableMarginDoodles', config.enableMarginDoodles);
     if (config.enableInkSpots !== undefined) this.store.set('enableInkSpots', config.enableInkSpots);
+    // Advanced handwriting settings
+    if (config.paperBackground !== undefined) this.store.set('paperBackground', config.paperBackground);
+    if (config.tableBackground !== undefined) this.store.set('tableBackground', config.tableBackground);
+    if (config.customFont !== undefined) this.store.set('customFont', config.customFont);
+    if (config.fontSizeAdvanced !== undefined) this.store.set('fontSizeAdvanced', config.fontSizeAdvanced);
+    if (config.lineHeight !== undefined) this.store.set('lineHeight', config.lineHeight);
+    if (config.letterSpacing !== undefined) this.store.set('letterSpacing', config.letterSpacing);
+    if (config.wordSpacing !== undefined) this.store.set('wordSpacing', config.wordSpacing);
+    if (config.enableBlur !== undefined) this.store.set('enableBlur', config.enableBlur);
+    if (config.enableShading !== undefined) this.store.set('enableShading', config.enableShading);
+    if (config.enablePaperShadow !== undefined) this.store.set('enablePaperShadow', config.enablePaperShadow);
+    if (config.enablePaperTexture !== undefined) this.store.set('enablePaperTexture', config.enablePaperTexture);
+    if (config.enableShadowSilhouette !== undefined) this.store.set('enableShadowSilhouette', config.enableShadowSilhouette);
+    if (config.enablePaperRotation !== undefined) this.store.set('enablePaperRotation', config.enablePaperRotation);
+    if (config.enableInkFlow !== undefined) this.store.set('enableInkFlow', config.enableInkFlow);
+    if (config.marginTop !== undefined) this.store.set('marginTop', config.marginTop);
+    if (config.marginRight !== undefined) this.store.set('marginRight', config.marginRight);
+    if (config.marginBottom !== undefined) this.store.set('marginBottom', config.marginBottom);
+    if (config.marginLeft !== undefined) this.store.set('marginLeft', config.marginLeft);
+    if (config.mirrorMargins !== undefined) this.store.set('mirrorMargins', config.mirrorMargins);
+    if (config.marginTopEven !== undefined) this.store.set('marginTopEven', config.marginTopEven);
+    if (config.marginRightEven !== undefined) this.store.set('marginRightEven', config.marginRightEven);
+    if (config.marginBottomEven !== undefined) this.store.set('marginBottomEven', config.marginBottomEven);
+    if (config.marginLeftEven !== undefined) this.store.set('marginLeftEven', config.marginLeftEven);
+    if (config.randomWordRotation !== undefined) this.store.set('randomWordRotation', config.randomWordRotation);
+    if (config.randomLetterRotation !== undefined) this.store.set('randomLetterRotation', config.randomLetterRotation);
+    if (config.randomIndentation !== undefined) this.store.set('randomIndentation', config.randomIndentation);
+    if (config.indentationRange !== undefined) this.store.set('indentationRange', config.indentationRange);
+    if (config.enableHyphenation !== undefined) this.store.set('enableHyphenation', config.enableHyphenation);
+    if (config.paragraphSpacing !== undefined) this.store.set('paragraphSpacing', config.paragraphSpacing);
+    if (config.outputFormat !== undefined) this.store.set('outputFormat', config.outputFormat);
+    if (config.outputQuality !== undefined) this.store.set('outputQuality', config.outputQuality);
+    if (config.pageSize !== undefined) this.store.set('pageSize', config.pageSize);
   }
 
   isConfigured(): boolean {
